@@ -20,18 +20,13 @@ class MaterialController extends Controller
                 return view($view, compact('materials', 'category'));
             }
             
-            // Default: Dashboard for Super Admin, All Materials for Admin
-            if (auth()->user()->role == 'super_admin') {
-                $categories = ['cover', 'case', 'inner', 'endplate'];
-                $stats = [];
-                foreach ($categories as $cat) {
-                    $stats[$cat] = Material::where('category', $cat)->count();
-                }
-                return view('super_admin.materials.index', compact('stats'));
+            // Default: Dashboard for Super Admin and Admin
+            $categories = ['cover', 'case', 'inner', 'endplate'];
+            $stats = [];
+            foreach ($categories as $cat) {
+                $stats[$cat] = Material::where('category', $cat)->count();
             }
-
-            $materials = Material::latest()->paginate(10);
-            return view('admin.materials.index', compact('materials'));
+            return view($view, compact('stats'));
         }
 
         // Operator view - Filter by user's division
