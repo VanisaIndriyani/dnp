@@ -1,0 +1,21 @@
+DAFTAR AKUN LOGIN SISTEM DNP ABSENSI
+
+1. Super Admin (Akses Penuh)
+   - NIK      : 99999999
+   - Password : password
+   - Role     : super_admin
+
+2. Admin Produksi (Manajemen Evaluasi & Laporan)
+   - NIK      : 88888888
+   - Password : password
+   - Role     : admin
+
+3. Operator (Pengguna Umum / Peserta Ujian)
+   - NIK      : 12345678
+   - Password : password
+   - Role     : operator
+   - Divisi   : case
+
+Catatan:
+- Password default untuk semua akun adalah "password"
+- Data ini berasal dari DatabaseSeeder.php
