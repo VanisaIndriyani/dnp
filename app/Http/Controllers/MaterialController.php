@@ -34,8 +34,16 @@ class MaterialController extends Controller
             return view('admin.materials.index', compact('materials'));
         }
 
-        // Operator view (unchanged for now, or could be filtered by user's division)
-        $materials = Material::latest()->paginate(10);
+        // Operator view - Filter by user's division
+        $userDivision = auth()->user()->division;
+        
+        $materials = Material::query();
+        
+        if ($userDivision) {
+            $materials->where('category', $userDivision);
+        }
+        
+        $materials = $materials->latest()->paginate(10);
         return view('operator.materials.index', compact('materials'));
     }
 
