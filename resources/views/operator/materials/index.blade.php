@@ -22,7 +22,11 @@
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge bg-secondary">{{ $material->category }}</span>
+                        <div>
+                            @if($material->type)
+                                <span class="badge bg-info">{{ $material->type }}</span>
+                            @endif
+                        </div>
                         @can('super_admin')
                         <form action="{{ route('super_admin.materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus materi ini?')">
                             @csrf

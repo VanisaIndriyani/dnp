@@ -21,14 +21,13 @@
                 @enderror
             </div>
 
-            <div class="mb-3">
-                <label for="category" class="form-label">Kategori</label>
-                @if(isset($category) && $category != '')
-                    <input type="hidden" name="category" value="{{ $category }}">
-                    <input type="text" class="form-control" value="{{ ucfirst($category) }}" disabled readonly>
-                @else
+            @if(isset($category) && $category != '')
+                <input type="hidden" name="category" value="{{ $category }}">
+            @else
+                <div class="mb-3">
+                    <label for="category" class="form-label">Bagian</label>
                     <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required>
-                        <option value="">Pilih Kategori</option>
+                        <option value="">Pilih Bagian</option>
                         <option value="cover" {{ old('category') == 'cover' ? 'selected' : '' }}>Cover</option>
                         <option value="case" {{ old('category') == 'case' ? 'selected' : '' }}>Case</option>
                         <option value="inner" {{ old('category') == 'inner' ? 'selected' : '' }}>Inner</option>
@@ -37,7 +36,22 @@
                     @error('category')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                @endif
+                </div>
+            @endif
+
+            <div class="mb-3">
+                <label for="type" class="form-label">Kategori</label>
+                <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
+                    <option value="">Pilih Kategori</option>
+                    <option value="General" {{ old('type') == 'General' ? 'selected' : '' }}>General</option>
+                    <option value="Safety" {{ old('type') == 'Safety' ? 'selected' : '' }}>Safety</option>
+                    <option value="Technical" {{ old('type') == 'Technical' ? 'selected' : '' }}>Technical</option>
+                    <option value="Quality" {{ old('type') == 'Quality' ? 'selected' : '' }}>Quality</option>
+                    <option value="SOP" {{ old('type') == 'SOP' ? 'selected' : '' }}>SOP</option>
+                </select>
+                @error('type')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">

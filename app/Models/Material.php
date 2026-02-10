@@ -12,6 +12,7 @@ class Material extends Model
     protected $fillable = [
         'title',
         'category',
+        'type',
         'file_path',
     ];
 }

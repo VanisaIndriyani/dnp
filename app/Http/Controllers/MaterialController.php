@@ -56,6 +56,7 @@ class MaterialController extends Controller
         $request->validate([
             'title' => 'required',
             'category' => 'required',
+            'type' => 'required',
             'file' => 'required|mimes:pdf|max:10240', // Max 10MB
         ]);
 
@@ -67,6 +68,7 @@ class MaterialController extends Controller
             Material::create([
                 'title' => $request->title,
                 'category' => $request->category,
+                'type' => $request->type,
                 'file_path' => $path,
             ]);
 
