@@ -41,8 +41,8 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
             $result->user->name ?? '-',
             $result->user->nik ?? '-',
             ucfirst($result->user->division ?? '-'),
-            $result->mc_score,
-            $result->essay_score,
+            strval($result->mc_score),
+            strval($result->essay_score),
             $result->score,
             $result->created_at->format('d/m/Y H:i'),
         ];

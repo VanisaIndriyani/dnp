@@ -66,17 +66,10 @@
 
             <div class="row">
                 <!-- Time In -->
-                <div class="col-md-6 mb-4">
+                <div class="col-md-12 mb-4">
                     <label for="time_in" class="form-label fw-bold">Jam Masuk</label>
                     <input type="time" class="form-control" id="time_in" name="time_in" value="08:00">
                     <div class="form-text">Format 24 jam (Contoh: 08:00). Kosongkan jika Tidak Hadir.</div>
-                </div>
-
-                <!-- Time Out -->
-                <div class="col-md-6 mb-4">
-                    <label for="time_out" class="form-label fw-bold">Jam Keluar (Opsional)</label>
-                    <input type="time" class="form-control" id="time_out" name="time_out">
-                    <div class="form-text">Biarkan kosong jika belum pulang.</div>
                 </div>
             </div>
 
@@ -95,7 +88,6 @@
         const userSelect = document.getElementById('user_id');
         const statusSelect = document.getElementById('status');
         const timeInInput = document.getElementById('time_in');
-        const timeOutInput = document.getElementById('time_out');
         
         // Store all original options (except the placeholder)
         const allOptions = Array.from(userSelect.querySelectorAll('option:not([value=""])'));
@@ -103,12 +95,9 @@
         function toggleTimeInputs() {
             if (statusSelect.value === 'alpha') {
                 timeInInput.value = '';
-                timeOutInput.value = '';
                 timeInInput.disabled = true;
-                timeOutInput.disabled = true;
             } else {
                 timeInInput.disabled = false;
-                timeOutInput.disabled = false;
                 if (!timeInInput.value) timeInInput.value = '08:00';
             }
         }

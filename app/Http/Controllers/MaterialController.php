@@ -11,26 +11,27 @@ class MaterialController extends Controller
     public function index(Request $request)
     {
         if (auth()->user()->role == 'super_admin' || auth()->user()->role == 'admin') {
+            $view = auth()->user()->role == 'super_admin' ? 'super_admin.materials.index' : 'admin.materials.index';
+
             // If category is selected, show materials for that category
             if ($request->has('category') && $request->category != '') {
                 $category = $request->category;
                 $materials = Material::where('category', $category)->latest()->paginate(10);
-                
-                // View path based on role
-                $view = auth()->user()->role == 'super_admin' ? 'super_admin.materials.index' : 'admin.materials.index';
                 return view($view, compact('materials', 'category'));
             }
             
-            // Default: Show Category Dashboard
-            $categories = ['cover', 'case', 'inner', 'endplate'];
-            $stats = [];
-            foreach ($categories as $cat) {
-                $stats[$cat] = Material::where('category', $cat)->count();
+            // Default: Dashboard for Super Admin, All Materials for Admin
+            if (auth()->user()->role == 'super_admin') {
+                $categories = ['cover', 'case', 'inner', 'endplate'];
+                $stats = [];
+                foreach ($categories as $cat) {
+                    $stats[$cat] = Material::where('category', $cat)->count();
+                }
+                return view('super_admin.materials.index', compact('stats'));
             }
 
-            // View path based on role
-            $view = auth()->user()->role == 'super_admin' ? 'super_admin.materials.index' : 'admin.materials.index';
-            return view($view, compact('stats'));
+            $materials = Material::latest()->paginate(10);
+            return view('admin.materials.index', compact('materials'));
         }
 
         // Operator view (unchanged for now, or could be filtered by user's division)

@@ -36,11 +36,7 @@
                                         ->first();
                         @endphp
                         @if($attendance)
-                            @if($attendance->time_out)
-                                <span class="text-success" style="font-size: 0.6em;"><i class="fas fa-check-circle me-1"></i> Sudah Pulang</span>
-                            @else
-                                <span class="text-warning" style="font-size: 0.6em;"><i class="fas fa-spinner fa-spin me-1"></i> Sedang Bekerja</span>
-                            @endif
+                            <span class="text-success" style="font-size: 0.6em;"><i class="fas fa-check-circle me-1"></i> Hadir</span>
                         @else
                             <span class="text-danger" style="font-size: 0.6em;"><i class="fas fa-times-circle me-1"></i> Belum Absen</span>
                         @endif
@@ -52,10 +48,7 @@
             </div>
             <div class="mt-3 text-muted small">
                 @if($attendance)
-                    <div><i class="fas fa-sign-in-alt text-success me-1"></i> Masuk: {{ \Carbon\Carbon::parse($attendance->time_in)->format('H:i') }}</div>
-                    @if($attendance->time_out)
-                    <div><i class="fas fa-sign-out-alt text-danger me-1"></i> Pulang: {{ \Carbon\Carbon::parse($attendance->time_out)->format('H:i') }}</div>
-                    @endif
+                    <div><i class="fas fa-check text-success me-1"></i> Hadir: {{ \Carbon\Carbon::parse($attendance->time_in)->format('H:i') }} WIB</div>
                 @else
                     <i class="fas fa-exclamation-triangle text-warning me-1"></i> Segera lakukan absensi masuk
                 @endif
@@ -124,7 +117,7 @@
                     <i class="fas fa-info-circle fa-2x me-3"></i>
                     <div>
                         <h5 class="alert-heading fw-bold mb-1">Penting!</h5>
-                        <p class="mb-0">Jangan lupa untuk melakukan <strong>absensi masuk</strong> saat tiba di lokasi kerja dan <strong>absensi pulang</strong> sebelum meninggalkan area kerja. Selalu patuhi protokol keselamatan kerja (K3) di setiap aktivitas.</p>
+                        <p class="mb-0">Jangan lupa untuk melakukan <strong>absensi</strong> saat tiba di lokasi kerja. Selalu patuhi protokol keselamatan kerja (K3) di setiap aktivitas.</p>
                     </div>
                 </div>
                 
@@ -154,10 +147,7 @@
                                             @if($log->time_in)
                                                 <span class="badge bg-success rounded-pill" title="Masuk">{{ \Carbon\Carbon::parse($log->time_in)->format('H:i') }}</span>
                                             @endif
-                                            @if($log->time_out)
-                                                <span class="badge bg-danger rounded-pill" title="Pulang">{{ \Carbon\Carbon::parse($log->time_out)->format('H:i') }}</span>
-                                            @endif
-                                            @if(!$log->time_in && !$log->time_out)
+                                            @if(!$log->time_in)
                                                 <span class="badge bg-secondary rounded-pill">-</span>
                                             @endif
                                         </div>

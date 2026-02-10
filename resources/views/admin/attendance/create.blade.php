@@ -21,30 +21,19 @@
                 @endif
 
                 <div class="mt-4">
-                    @if(!$todayAttendance)
+                    @if($todayAttendance)
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle fa-2x mb-3 d-block"></i>
+                            <h4>Absensi Selesai</h4>
+                            <p class="mb-0">Anda sudah absen hari ini pukul: {{ \Carbon\Carbon::parse($todayAttendance->time_in)->format('H:i') }}</p>
+                        </div>
+                    @else
                         <form action="{{ route('admin.attendance.store') }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-success btn-lg px-5 py-3 rounded-pill">
                                 <i class="fas fa-sign-in-alt me-2"></i> ABSEN MASUK
                             </button>
                         </form>
-                    @elseif(!$todayAttendance->time_out)
-                        <div class="alert alert-info mb-4">
-                            Anda masuk pukul: <strong>{{ \Carbon\Carbon::parse($todayAttendance->time_in)->format('H:i') }}</strong>
-                        </div>
-                        <form action="{{ route('admin.attendance.store') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-warning btn-lg px-5 py-3 rounded-pill text-white">
-                                <i class="fas fa-sign-out-alt me-2"></i> ABSEN KELUAR
-                            </button>
-                        </form>
-                    @else
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle fa-2x mb-3 d-block"></i>
-                            <h4>Absensi Selesai</h4>
-                            <p class="mb-0">Masuk: {{ \Carbon\Carbon::parse($todayAttendance->time_in)->format('H:i') }}</p>
-                            <p>Keluar: {{ \Carbon\Carbon::parse($todayAttendance->time_out)->format('H:i') }}</p>
-                        </div>
                     @endif
                 </div>
             </div>

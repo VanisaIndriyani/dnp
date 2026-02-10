@@ -77,7 +77,6 @@
                         <th class="py-3 text-secondary small text-uppercase fw-bold">NIK</th>
                         <th class="py-3 text-secondary small text-uppercase fw-bold">Bagian</th>
                         <th class="py-3 text-secondary small text-uppercase fw-bold">Jam Masuk</th>
-                        <th class="py-3 text-secondary small text-uppercase fw-bold">Jam Keluar</th>
                         <th class="py-3 text-secondary small text-uppercase fw-bold">Status</th>
                         @can('admin')
                         <th class="py-3 text-secondary small text-uppercase fw-bold text-end pe-4">Aksi</th>
@@ -134,13 +133,6 @@
                             <td class="fw-medium">
                                 @if($timeIn)
                                     <span class="badge bg-success">{{ \Carbon\Carbon::parse($timeIn)->format('H:i') }}</span>
-                                @else
-                                    <span class="badge bg-secondary">-</span>
-                                @endif
-                            </td>
-                            <td class="fw-medium">
-                                @if($timeOut)
-                                    <span class="badge bg-danger">{{ \Carbon\Carbon::parse($timeOut)->format('H:i') }}</span>
                                 @else
                                     <span class="badge bg-secondary">-</span>
                                 @endif

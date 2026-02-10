@@ -25,7 +25,6 @@ class AttendanceController extends Controller
             'user_id' => 'required|exists:users,id',
             'date' => 'required|date',
             'time_in' => 'nullable',
-            'time_out' => 'nullable|after_or_equal:time_in',
             'status' => 'required|in:present,sick,alpha,permission',
         ]);
 
@@ -41,13 +40,11 @@ class AttendanceController extends Controller
         // Handle time formatting (append date to time)
         $date = $request->date;
         $timeIn = $request->time_in ? $date . ' ' . $request->time_in : null;
-        $timeOut = $request->time_out ? $date . ' ' . $request->time_out : null;
 
         Attendance::create([
             'user_id' => $request->user_id,
             'date' => $request->date,
             'time_in' => $timeIn,
-            'time_out' => $timeOut,
             'status' => $request->status,
             'is_approved' => true, // Manual entry by admin is auto-approved
             'approved_by' => auth()->id(),
@@ -69,14 +66,12 @@ class AttendanceController extends Controller
         $request->validate([
             'date' => 'required|date',
             'time_in' => 'nullable',
-            'time_out' => 'nullable|after_or_equal:time_in',
             'status' => 'required|in:present,sick,alpha,permission',
         ]);
 
         $date = $request->date;
         // If time_in is provided, format it. If empty (e.g. for alpha/sick), keep it null or set to null
         $timeIn = $request->time_in ? $date . ' ' . $request->time_in : null;
-        $timeOut = $request->time_out ? $date . ' ' . $request->time_out : null;
 
         // If status is alpha/sick/permission, time_in might be cleared if user wants
         // But let's respect the input.
@@ -84,7 +79,6 @@ class AttendanceController extends Controller
         $attendance->update([
             'date' => $request->date,
             'time_in' => $timeIn,
-            'time_out' => $timeOut,
             'status' => $request->status,
         ]);
 
@@ -145,11 +139,6 @@ class AttendanceController extends Controller
                 
                 $msg = ($status == 'alpha') ? 'Ditandai Tidak Hadir.' : 'Berhasil Absen Masuk!';
                 return back()->with('success', $msg);
-            } elseif (!$attendance->time_out && $request->action != 'absent') {
-                $attendance->update([
-                    'time_out' => $now,
-                ]);
-                return back()->with('success', 'Berhasil Absen Pulang! Terima kasih, ' . $user->name);
             } else {
                 return back()->with('info', 'Anda sudah melakukan absensi hari ini.');
             }
@@ -170,13 +159,8 @@ class AttendanceController extends Controller
                 'is_approved' => false,
             ]);
             return redirect()->route('operator.attendance.create')->with('success', 'Berhasil Absen Masuk.');
-        } elseif (!$todayAttendance->time_out) {
-            $todayAttendance->update([
-                'time_out' => Carbon::now(),
-            ]);
-            return redirect()->route('operator.attendance.create')->with('success', 'Berhasil Absen Keluar.');
         } else {
-            return redirect()->route('operator.attendance.create')->with('error', 'Anda sudah melakukan absensi hari ini.');
+            return redirect()->route('operator.attendance.create')->with('info', 'Anda sudah melakukan absensi hari ini.');
         }
     }
 

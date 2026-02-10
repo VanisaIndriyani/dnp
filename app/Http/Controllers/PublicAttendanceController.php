@@ -75,13 +75,6 @@ class PublicAttendanceController extends Controller
             
             $msg = ($status == 'alpha') ? 'Ditandai Tidak Hadir.' : 'Berhasil Absen Masuk!';
             return back()->with('success', $msg);
-        } elseif (!$attendance->time_out && $request->action != 'absent') {
-            // Clock Out
-            $attendance->update([
-                'time_out' => $now,
-            ]);
-
-            return back()->with('success', 'Berhasil Absen Pulang! Terima kasih, ' . $user->name);
         } else {
             // Already completed
             return back()->with('info', 'Anda sudah melakukan absensi hari ini.');

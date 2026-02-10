@@ -58,17 +58,13 @@
                         <!-- Status Badge -->
                          @if($user->today_attendance)
                             <div class="text-center mb-3">
-                                @if($user->today_attendance->time_out)
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
-                                        <i class="fas fa-check-double me-1"></i> Selesai
-                                    </span>
-                                @elseif($user->today_attendance->status == 'alpha')
+                                @if($user->today_attendance->status == 'alpha')
                                     <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">
                                         <i class="fas fa-times me-1"></i> Tidak Hadir
                                     </span>
                                 @else
-                                    <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-2">
-                                        <i class="fas fa-clock me-1"></i> Masuk: {{ \Carbon\Carbon::parse($user->today_attendance->time_in)->format('H:i') }}
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                        <i class="fas fa-check me-1"></i> Hadir: {{ \Carbon\Carbon::parse($user->today_attendance->time_in)->format('H:i') }} WIB
                                     </span>
                                 @endif
                             </div>
@@ -101,19 +97,9 @@
                                         </form>
                                     </div>
                                 </div>
-
-                            @elseif(!$user->today_attendance->time_out && $user->today_attendance->status != 'alpha')
-                                <form action="{{ route('operator.attendance.store') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="nik" value="{{ $user->nik }}">
-                                    <input type="hidden" name="division" value="{{ $division }}">
-                                    <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-white shadow-sm">
-                                        <i class="fas fa-sign-out-alt me-1"></i> ABSEN PULANG
-                                    </button>
-                                </form>
                             @else
                                 <button class="btn btn-secondary w-100 py-2" disabled>
-                                    <i class="fas fa-check-circle me-1"></i> Selesai Hari Ini
+                                    <i class="fas fa-check-circle me-1"></i> Sudah Absen
                                 </button>
                             @endif
                         </div>

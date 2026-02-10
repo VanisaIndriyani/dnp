@@ -42,7 +42,6 @@
                     <tr>
                         <th class="ps-4">Tanggal</th>
                         <th>Jam Masuk</th>
-                        <th>Jam Keluar</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -50,8 +49,7 @@
                     @forelse($attendances as $attendance)
                         <tr>
                             <td class="ps-4">{{ \Carbon\Carbon::parse($attendance->date)->format('d/m/Y') }}</td>
-                            <td>{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '-' }}</td>
-                            <td>{{ $attendance->time_out ? \Carbon\Carbon::parse($attendance->time_out)->format('H:i') : '-' }}</td>
+                            <td>{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') . ' WIB' : '-' }}</td>
                             <td>
                                 @php
                                     $statusColor = 'secondary';

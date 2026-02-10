@@ -26,7 +26,7 @@
             </li>
             <li>
                 <a href="{{ route('operator.attendance.create') }}" class="{{ request()->routeIs('operator.attendance.create') ? 'active' : '' }}">
-                    <i class="fas fa-clock"></i> Absensi Masuk/Keluar
+                    <i class="fas fa-clock"></i> Absensi
                 </a>
             </li>
             <li>

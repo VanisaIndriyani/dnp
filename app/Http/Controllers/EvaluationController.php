@@ -433,13 +433,18 @@ class EvaluationController extends Controller
 
     private function recalculateAndSave(EvaluationResult $result)
     {
-        // Get all answers for this user
-        // Note: We need to make sure we only get answers relevant to the current "session" or latest attempt
-        // Since we delete old answers on reset, getting all answers for user_id should be fine
-        // BUT ideally we should filter by evaluation IDs that currently exist?
-        // Let's just take all answers for the user, assuming one active attempt.
+        // Get all answers for this user, filtered by their division (to avoid counting old/irrelevant answers)
+        $userDivision = $result->user->division;
         
-        $answers = EvaluationAnswer::where('user_id', $result->user_id)->get();
+        $answers = EvaluationAnswer::where('user_id', $result->user_id)
+            ->whereHas('evaluation', function($q) use ($userDivision) {
+                if ($userDivision) {
+                    $q->where('category', $userDivision);
+                } else {
+                    $q->whereNull('category');
+                }
+            })
+            ->get();
         
         if ($answers->count() > 0) {
             $totalScore = $answers->sum('score');

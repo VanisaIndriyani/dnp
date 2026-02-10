@@ -153,12 +153,10 @@
                                 <small class="text-muted"><i class="fas fa-id-card me-1"></i> {{ $user->nik }}</small>
                                 @if($user->today_attendance)
                                     <div class="mt-1">
-                                        @if($user->today_attendance->time_out)
-                                            <span class="badge bg-success">Selesai</span>
-                                        @elseif($user->today_attendance->status == 'alpha')
+                                        @if($user->today_attendance->status == 'alpha')
                                             <span class="badge bg-danger">Tidak Hadir</span>
                                         @else
-                                            <span class="badge bg-info text-dark">Hadir: {{ \Carbon\Carbon::parse($user->today_attendance->time_in)->format('H:i') }}</span>
+                                            <span class="badge bg-success">Hadir: {{ \Carbon\Carbon::parse($user->today_attendance->time_in)->format('H:i') }}</span>
                                         @endif
                                     </div>
                                 @endif
@@ -183,18 +181,9 @@
                                             <i class="fas fa-times me-1"></i> Absen
                                         </button>
                                     </form>
-                                @elseif(!$user->today_attendance->time_out && $user->today_attendance->status != 'alpha')
-                                    <form action="{{ route('quick-attendance.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="nik" value="{{ $user->nik }}">
-                                        <input type="hidden" name="division" value="{{ request('division') }}">
-                                        <button type="submit" class="btn btn-warning btn-sm w-100 text-white">
-                                            <i class="fas fa-sign-out-alt me-1"></i> Pulang
-                                        </button>
-                                    </form>
                                 @else
                                     <button class="btn btn-secondary btn-sm w-100" disabled>
-                                        <i class="fas fa-check-double"></i>
+                                        <i class="fas fa-check-double"></i> Selesai
                                     </button>
                                 @endif
                             </div>

@@ -44,19 +44,11 @@
 
             <div class="row">
                 <!-- Time In -->
-                <div class="col-md-6 mb-4">
+                <div class="col-md-12 mb-4">
                     <label for="time_in" class="form-label fw-bold">Jam Masuk</label>
                     <input type="time" class="form-control" id="time_in" name="time_in" 
                         value="{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '' }}">
                     <div class="form-text">Kosongkan jika tidak hadir.</div>
-                </div>
-
-                <!-- Time Out -->
-                <div class="col-md-6 mb-4">
-                    <label for="time_out" class="form-label fw-bold">Jam Keluar</label>
-                    <input type="time" class="form-control" id="time_out" name="time_out" 
-                        value="{{ $attendance->time_out ? \Carbon\Carbon::parse($attendance->time_out)->format('H:i') : '' }}">
-                    <div class="form-text">Biarkan kosong jika belum pulang atau tidak hadir.</div>
                 </div>
             </div>
 
