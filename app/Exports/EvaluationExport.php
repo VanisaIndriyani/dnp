@@ -43,7 +43,7 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
             ucfirst($result->user->division ?? '-'),
             strval($result->mc_score),
             strval($result->essay_score),
-            $result->score,
+            strval($result->score),
             $result->created_at->format('d/m/Y H:i'),
         ];
     }

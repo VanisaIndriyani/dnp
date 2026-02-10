@@ -65,12 +65,12 @@
         </div>
     </div>
 
-    <!-- Card 4: Belum Absen (Operator Only) -->
+    <!-- Card 4: Tidak Hadir (Operator Only) -->
     <div class="col-md-6 col-lg-4">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="stats-title">Belum Absen</div>
+                    <div class="stats-title">Tidak Hadir</div>
                     <div class="stats-value">
                         @php
                             $totalOps = \App\Models\User::where('role', 'operator')->count();
@@ -87,7 +87,7 @@
                 </div>
             </div>
             <div class="mt-3 text-muted small">
-                <i class="fas fa-times-circle text-danger me-1"></i> Operator Alpha
+                <i class="fas fa-times-circle text-danger me-1"></i> Operator Belum Absen
             </div>
         </div>
     </div>
@@ -111,7 +111,6 @@
                                 <th class="ps-4">Nama</th>
                                 <th>Bagian</th>
                                 <th>Jam Masuk</th>
-                                <th>Jam Keluar</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -160,18 +159,7 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($attendance->time_in)->format('H:i') }}</td>
                                 <td>
-                                    @if($attendance->time_out)
-                                        {{ \Carbon\Carbon::parse($attendance->time_out)->format('H:i') }}
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($attendance->time_out)
-                                        <span class="badge bg-success-subtle text-success">Selesai</span>
-                                    @else
-                                        <span class="badge bg-warning-subtle text-warning">Bekerja</span>
-                                    @endif
+                                    <span class="badge bg-success-subtle text-success">Hadir</span>
                                 </td>
                             </tr>
                             @empty

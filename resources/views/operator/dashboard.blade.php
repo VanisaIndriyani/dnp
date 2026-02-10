@@ -38,7 +38,7 @@
                         @if($attendance)
                             <span class="text-success" style="font-size: 0.6em;"><i class="fas fa-check-circle me-1"></i> Hadir</span>
                         @else
-                            <span class="text-danger" style="font-size: 0.6em;"><i class="fas fa-times-circle me-1"></i> Belum Absen</span>
+                            <span class="text-danger" style="font-size: 0.6em;"><i class="fas fa-times-circle me-1"></i> Tidak Hadir</span>
                         @endif
                     </div>
                 </div>

@@ -78,12 +78,12 @@
         </div>
     </div>
 
-    <!-- Card 4: Belum Absen -->
+    <!-- Card 4: Tidak Hadir -->
     <div class="col-md-6 col-lg-3">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div class="stats-title">Belum Absen</div>
+                    <div class="stats-title">Tidak Hadir</div>
                     <div class="stats-value">
                         @php
                             $totalUsers = \App\Models\User::where('role', '!=', 'super_admin')->count();
@@ -93,11 +93,11 @@
                     </div>
                 </div>
                 <div class="stats-icon warning">
-                    <i class="fas fa-user-clock"></i>
+                    <i class="fas fa-user-times"></i>
                 </div>
             </div>
             <div class="mt-3 text-muted small">
-                <i class="fas fa-exclamation-circle text-warning me-1"></i> Perlu diingatkan
+                <i class="fas fa-exclamation-circle text-warning me-1"></i> Belum Absen
             </div>
         </div>
     </div>
@@ -121,7 +121,6 @@
                                 <th class="ps-4">Nama Karyawan</th>
                                 <th>Role</th>
                                 <th>Jam Masuk</th>
-                                <th>Jam Pulang</th>
                                 <th>Status Kehadiran</th>
                             </tr>
                         </thead>
@@ -164,19 +163,7 @@
                                     <small class="text-muted d-block">WIB</small>
                                 </td>
                                 <td>
-                                    @if($attendance->time_out)
-                                        <span class="fw-bold text-dark">{{ \Carbon\Carbon::parse($attendance->time_out)->format('H:i') }}</span>
-                                        <small class="text-muted d-block">WIB</small>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($attendance->time_out)
-                                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Selesai</span>
-                                    @else
-                                        <span class="badge bg-warning text-dark"><i class="fas fa-spinner fa-spin me-1"></i> Bekerja</span>
-                                    @endif
+                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Hadir</span>
                                 </td>
                             </tr>
                             @empty

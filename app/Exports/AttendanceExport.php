@@ -58,7 +58,6 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
             $attendance->user->nik,
             ucfirst($attendance->user->division),
             $attendance->time_in,
-            $attendance->time_out,
             ucfirst($status),
         ];
     }
@@ -72,7 +71,6 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
             'NIK',
             'Bagian',
             'Jam Masuk',
-            'Jam Keluar',
             'Status',
         ];
     }
@@ -98,7 +96,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                 $sheet = $event->sheet;
 
                 // Title
-                $sheet->mergeCells('A1:H1');
+                $sheet->mergeCells('A1:G1');
                 $sheet->setCellValue('A1', 'Data Absensi - Training Center Part Production');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 14],
@@ -107,7 +105,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                 $sheet->getRowDimension(1)->setRowHeight(25);
 
                 // Date
-                $sheet->mergeCells('A2:H2');
+                $sheet->mergeCells('A2:G2');
                 $sheet->setCellValue('A2', 'Tanggal: ' . ($this->date ? \Carbon\Carbon::parse($this->date)->translatedFormat('d F Y') : 'Semua Tanggal'));
                 $sheet->getStyle('A2')->applyFromArray([
                     'font' => ['bold' => true],
@@ -117,7 +115,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
 
                 // Borders for data
                 $lastRow = $sheet->getHighestRow();
-                $sheet->getStyle('A4:H' . $lastRow)->applyFromArray([
+                $sheet->getStyle('A4:G' . $lastRow)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -133,7 +131,6 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                 $sheet->getStyle('B4:B' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle('D4:D' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle('F4:G' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('H4:H' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             },
         ];
     }
