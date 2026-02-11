@@ -25,6 +25,7 @@ class EvaluationResult extends Model
         $userDivision = $this->user->division;
         $answers = EvaluationAnswer::where('user_id', $this->user_id)
             ->whereHas('evaluation', function ($query) use ($userDivision) {
+                $query->withTrashed(); // Include soft deleted questions
                 $query->where('type', 'multiple_choice');
                 if ($userDivision) {
                     $query->where('category', $userDivision);
@@ -42,6 +43,7 @@ class EvaluationResult extends Model
         $userDivision = $this->user->division;
         $answers = EvaluationAnswer::where('user_id', $this->user_id)
             ->whereHas('evaluation', function ($query) use ($userDivision) {
+                $query->withTrashed(); // Include soft deleted questions
                 $query->where('type', 'essay');
                 if ($userDivision) {
                     $query->where('category', $userDivision);

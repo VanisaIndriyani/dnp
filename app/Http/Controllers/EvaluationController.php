@@ -389,17 +389,19 @@ class EvaluationController extends Controller
         
         // Get answers for this user
         // We assume the user took all current questions or we just find answers that exist
-        $answers = EvaluationAnswer::with('evaluation')
+        $answers = EvaluationAnswer::with(['evaluation' => function ($q) {
+                $q->withTrashed();
+            }])
             ->where('user_id', $result->user_id)
             ->get();
             
         // Separate answers
         $mcAnswers = $answers->filter(function ($answer) {
-            return $answer->evaluation->type === 'multiple_choice';
+            return $answer->evaluation && $answer->evaluation->type === 'multiple_choice';
         });
         
         $essayAnswers = $answers->filter(function ($answer) {
-            return $answer->evaluation->type === 'essay';
+            return $answer->evaluation && $answer->evaluation->type === 'essay';
         });
 
         // Calculate Breakdown Scores
@@ -428,7 +430,7 @@ class EvaluationController extends Controller
         // 2. Recalculate Total Score from Scratch (All Answers)
         $this->recalculateAndSave($result);
         
-        return redirect()->route(auth()->user()->role . '.evaluation.results')->with('success', 'Penilaian berhasil disimpan. Skor akhir telah diperbarui.');
+        return redirect()->route(auth()->user()->role . '.evaluation.results', ['division' => $result->user->division])->with('success', 'Penilaian berhasil disimpan. Skor akhir telah diperbarui.');
     }
 
     private function recalculateAndSave(EvaluationResult $result)
@@ -438,6 +440,7 @@ class EvaluationController extends Controller
         
         $answers = EvaluationAnswer::where('user_id', $result->user_id)
             ->whereHas('evaluation', function($q) use ($userDivision) {
+                $q->withTrashed();
                 if ($userDivision) {
                     $q->where('category', $userDivision);
                 } else {

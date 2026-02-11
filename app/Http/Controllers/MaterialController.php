@@ -44,15 +44,22 @@ class MaterialController extends Controller
 
     public function create(Request $request)
     {
-        $category = $request->query('category');
-        if (auth()->user()->role == 'super_admin') {
-            return view('super_admin.materials.create', compact('category'));
+        // Only Super Admin can upload materials
+        if (auth()->user()->role != 'super_admin') {
+            return redirect()->route(auth()->user()->role . '.materials.index')->with('error', 'Anda tidak memiliki akses untuk mengupload materi.');
         }
-        return view('admin.materials.create', compact('category'));
+
+        $category = $request->query('category');
+        return view('super_admin.materials.create', compact('category'));
     }
 
     public function store(Request $request)
     {
+        // Only Super Admin can upload materials
+        if (auth()->user()->role != 'super_admin') {
+            abort(403);
+        }
+
         $request->validate([
             'title' => 'required',
             'category' => 'required',
