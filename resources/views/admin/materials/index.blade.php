@@ -26,21 +26,21 @@
             <a href="{{ route('admin.materials.index', ['category' => $cat]) }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm h-100 hover-card">
                     <div class="card-body text-center p-4">
-                        <div class="avatar-lg mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-book-open fa-2x text-primary"></i>
+                        <div class="avatar-lg mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: rgba(198, 40, 40, 0.1);">
+                            <i class="fas fa-book-open fa-2x" style="color: var(--primary-color);"></i>
                         </div>
                         <h4 class="card-title text-dark mb-1">{{ ucfirst($cat) }}</h4>
                         <p class="text-muted small mb-3">Lihat materi untuk bagian {{ ucfirst($cat) }}</p>
                         
                         <div class="d-flex justify-content-center gap-3">
                             <div class="text-center">
-                                <h5 class="mb-0 fw-bold text-success">{{ $count }}</h5>
+                                <h5 class="mb-0 fw-bold" style="color: var(--primary-color);">{{ $count }}</h5>
                                 <small class="text-muted" style="font-size: 0.75rem;">Total File</small>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer bg-transparent border-0 pb-3">
-                        <span class="btn btn-outline-primary btn-sm w-100 rounded-pill">Lihat Materi</span>
+                        <span class="btn btn-sm w-100 rounded-pill" style="color: var(--primary-color); border-color: var(--primary-color); background-color: white;">Lihat Materi</span>
                     </div>
                 </div>
             </a>
@@ -50,11 +50,16 @@
 
     <style>
         .hover-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
         .hover-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 10px 20px rgba(198, 40, 40, 0.15) !important;
+            border: 1px solid var(--primary-color) !important;
+        }
+        .hover-card:hover .btn {
+            background-color: var(--primary-color) !important;
+            color: white !important;
         }
     </style>
 
