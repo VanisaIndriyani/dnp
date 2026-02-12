@@ -9,6 +9,9 @@
         <a href="{{ route('super_admin.attendance.export', request()->query()) }}" class="btn btn-success shadow-sm">
             <i class="fas fa-file-excel me-2"></i>Export Excel
         </a>
+        <button type="button" class="btn btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="fas fa-upload me-2"></i>Import Excel
+        </button>
     </div>
 </div>
 
@@ -187,4 +190,35 @@
         </div>
     </div>
 </div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('super_admin.attendance.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Data Absensi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
+                        <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">
+                    </div>
+                    <div class="mb-3">
+                        <a href="{{ route('super_admin.attendance.template') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download me-1"></i> Download Template
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection

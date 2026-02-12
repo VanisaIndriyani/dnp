@@ -47,6 +47,8 @@ Route::prefix('super_admin')->name('super_admin.')->middleware(['auth'])->group(
     Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
+    Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
+    Route::get('/attendance/template', [AttendanceController::class, 'downloadTemplate'])->name('attendance.template');
     Route::post('/attendance/{attendance}/approve', [AttendanceController::class, 'approve'])->name('attendance.approve');
 
     // Evaluation
@@ -92,6 +94,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
     Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
+    Route::post('/attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
+    Route::get('/attendance/template', [AttendanceController::class, 'downloadTemplate'])->name('attendance.template');
     Route::post('/attendance/{attendance}/approve', [AttendanceController::class, 'approve'])->name('attendance.approve');
     
     // Evaluation (View Results & Manage)

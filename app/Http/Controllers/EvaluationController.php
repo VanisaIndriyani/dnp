@@ -144,14 +144,32 @@ class EvaluationController extends Controller
             // If category is selected, show questions for that category
             if ($request->has('category') && $request->category != '') {
                 $category = $request->category;
+                $subCategory = $request->sub_category;
                 
                 $queryMc = Evaluation::where('type', 'multiple_choice')->where('category', $category);
                 $queryEssay = Evaluation::where('type', 'essay')->where('category', $category);
 
+                if ($subCategory) {
+                    $queryMc->where('sub_category', $subCategory);
+                    $queryEssay->where('sub_category', $subCategory);
+                }
+
                 $mcQuestions = $queryMc->latest()->paginate(10, ['*'], 'mc_page');
                 $essayQuestions = $queryEssay->latest()->paginate(10, ['*'], 'essay_page');
                 
-                return view('super_admin.evaluation.index', compact('mcQuestions', 'essayQuestions', 'category'));
+                // Get available sub categories for filter
+                $availableSubCategories = Evaluation::where('category', $category)
+                    ->whereNotNull('sub_category')
+                    ->distinct()
+                    ->pluck('sub_category')
+                    ->sort()
+                    ->values();
+
+                // Standard Sub Categories (ensure these always appear in filter/modal even if no data yet)
+                $standardSubCategories = collect(['General', 'Safety', 'Technical', 'Quality', 'SOP']);
+                $availableSubCategories = $standardSubCategories->merge($availableSubCategories)->unique()->sort()->values();
+                
+                return view('super_admin.evaluation.index', compact('mcQuestions', 'essayQuestions', 'category', 'subCategory', 'availableSubCategories'));
             }
             
             // Default: Show Category Dashboard
@@ -299,8 +317,8 @@ class EvaluationController extends Controller
     public function downloadTemplate()
     {
         $template = [
-            ['type', 'category', 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer'],
-            ['multiple_choice', 'cover', 'Apa warna langit?', 'Merah', 'Biru', 'Hijau', 'Kuning', 'Biru'],
+            ['tipe', 'kategori', 'pertanyaan', 'opsi_a', 'opsi_b', 'opsi_c', 'opsi_d', 'kunci'],
+            ['pilihan ganda', 'cover', 'Apa warna langit?', 'Merah', 'Biru', 'Hijau', 'Kuning', 'Biru'],
             ['essay', 'case', 'Jelaskan tentang...', '', '', '', '', ''],
         ];
 

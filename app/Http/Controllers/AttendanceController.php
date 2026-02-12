@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Exports\AttendanceExport;
+use App\Imports\AttendanceImport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
@@ -281,4 +282,32 @@ class AttendanceController extends Controller
 
         return Excel::download(new AttendanceExport($data, $date), $fileName);
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new AttendanceImport, $request->file('file'));
+            return redirect()->back()->with('success', 'Data absensi berhasil diimport.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal import data: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new class implements \Maatwebsite\Excel\Concerns\FromArray {
+            public function array(): array
+            {
+                return [
+                    ['nik', 'date', 'time_in', 'time_out', 'status'],
+                    ['123456', '2026-02-12', '08:00', '17:00', 'hadir'],
+                ];
+            }
+        }, 'template_absensi.xlsx');
+    }
+
 }

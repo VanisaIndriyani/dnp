@@ -18,6 +18,9 @@
             <a href="{{ route('admin.attendance.export', request()->query()) }}" class="btn btn-success btn-sm shadow-sm">
                 <i class="fas fa-file-excel me-1"></i> Export
             </a>
+            <button type="button" class="btn btn-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="fas fa-upload me-1"></i> Import
+            </button>
 
             <div class="vr mx-1 d-none d-xl-block bg-secondary opacity-25"></div>
 
@@ -210,4 +213,35 @@
         </div>
     </div>
 </div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.attendance.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Data Absensi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
+                        <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">
+                    </div>
+                    <div class="mb-3">
+                        <a href="{{ route('admin.attendance.template') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download me-1"></i> Download Template
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection

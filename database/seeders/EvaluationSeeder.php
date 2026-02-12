@@ -18,6 +18,16 @@ class EvaluationSeeder extends Seeder
             [
                 'type' => 'multiple_choice',
                 'category' => 'cover',
+                'question' => 'Apa warna langit?',
+                'option_a' => 'Merah',
+                'option_b' => 'Biru',
+                'option_c' => 'Hijau',
+                'option_d' => 'Kuning',
+                'correct_answer' => 'b',
+            ],
+            [
+                'type' => 'multiple_choice',
+                'category' => 'cover',
                 'question' => 'Apa fungsi utama dari Cover pada produk?',
                 'option_a' => 'Sebagai hiasan saja',
                 'option_b' => 'Melindungi komponen bagian dalam',

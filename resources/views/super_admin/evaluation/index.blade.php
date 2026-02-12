@@ -79,6 +79,22 @@
             <div>
                 @can('super_admin')
                 
+                {{-- Filter Sub Category --}}
+                <form action="{{ route('super_admin.evaluation.index') }}" method="GET" class="d-inline-block me-2">
+                    <input type="hidden" name="category" value="{{ $category }}">
+                    <div class="input-group shadow-sm rounded-pill overflow-hidden border" style="background: white;">
+                        <span class="input-group-text bg-transparent border-0 pe-0 ps-3 text-primary">
+                            <i class="fas fa-filter fa-sm"></i>
+                        </span>
+                        <select name="sub_category" class="form-select border-0 shadow-none ps-2 fw-bold text-dark" onchange="this.form.submit()" style="min-width: 160px; cursor: pointer; background-color: transparent; font-size: 0.9rem;">
+                            <option value="" class="text-muted fw-normal">Semua Kategori</option>
+                            @foreach($availableSubCategories as $sub)
+                                <option value="{{ $sub }}" {{ isset($subCategory) && $subCategory == $sub ? 'selected' : '' }} class="fw-bold">{{ $sub }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
+
                 <form id="deleteAllForm" action="{{ route('super_admin.evaluation.destroyAll') }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
@@ -257,26 +273,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="sub_category" class="form-label">Kategori Soal</label>
-                            <select class="form-select" id="sub_category" name="sub_category" required>
-                                <option value="" selected disabled>Pilih Kategori</option>
-                                <option value="General">General</option>
-                                <option value="Safety">Safety</option>
-                                <option value="Technical">Technical</option>
-                                <option value="Quality">Quality</option>
-                                <option value="SOP">SOP</option>
-                            </select>
-                        </div>
+                        <input type="hidden" name="sub_category" value="{{ $subCategory ?? '' }}">
                         <div class="mb-3">
                             <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
                             <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">
-                            <div class="form-text">Pastikan format file sesuai dengan template.</div>
-                        </div>
-                        <div class="mb-3">
-                            <a href="{{ route('super_admin.evaluation.template') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-download me-1"></i> Download Template
-                            </a>
                         </div>
                     </div>
                     <div class="modal-footer">
