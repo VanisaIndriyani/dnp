@@ -4,14 +4,8 @@
 
 @section('content')
 <div class="row mb-4">
-    <div class="col-12 d-flex justify-content-between align-items-center">
+    <div class="col-12">
         <h2 class="mb-0 fw-bold">Data Absensi</h2>
-        <a href="{{ route('super_admin.attendance.export', request()->query()) }}" class="btn btn-success shadow-sm">
-            <i class="fas fa-file-excel me-2"></i>Export Excel
-        </a>
-        <button type="button" class="btn btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#importModal">
-            <i class="fas fa-upload me-2"></i>Import Excel
-        </button>
     </div>
 </div>
 
@@ -19,18 +13,18 @@
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
         <form action="{{ route('super_admin.attendance.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="date" class="form-label fw-bold text-secondary small text-uppercase">Tanggal</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-calendar"></i></span>
-                    <input type="date" class="form-control border-start-0 ps-0" id="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()">
+                    <span class="input-group-text bg-light text-muted"><i class="fas fa-calendar"></i></span>
+                    <input type="date" class="form-control" id="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()">
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="division" class="form-label fw-bold text-secondary small text-uppercase">Bagian</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-layer-group"></i></span>
-                    <select class="form-select border-start-0 ps-0" id="division" name="division" onchange="this.form.submit()">
+                    <span class="input-group-text bg-light text-muted"><i class="fas fa-layer-group"></i></span>
+                    <select class="form-select" id="division" name="division" onchange="this.form.submit()">
                         <option value="">Semua Bagian</option>
                         <option value="case" {{ request('division') == 'case' ? 'selected' : '' }}>Case</option>
                         <option value="cover" {{ request('division') == 'cover' ? 'selected' : '' }}>Cover</option>
@@ -39,17 +33,23 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="status" class="form-label fw-bold text-secondary small text-uppercase">Status</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-filter"></i></span>
-                    <select class="form-select border-start-0 ps-0" id="status" name="status" onchange="this.form.submit()">
+                    <span class="input-group-text bg-light text-muted"><i class="fas fa-filter"></i></span>
+                    <select class="form-select" id="status" name="status" onchange="this.form.submit()">
                         <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
                         <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir (Belum Absen)</option>
                     </select>
                 </div>
             </div>
-            {{-- Filter button removed for auto-submit --}}
+            <div class="col-md-3">
+                <div class="d-grid">
+                    <a href="{{ route('super_admin.attendance.export', request()->query()) }}" class="btn btn-success">
+                        <i class="fas fa-file-excel me-2"></i>Export Excel
+                    </a>
+                </div>
+            </div>
         </form>
     </div>
 </div>
@@ -183,36 +183,6 @@
         <!-- Pagination -->
         <div class="px-4 py-3 border-top bg-light">
             {{ $attendances->withQueryString()->links() }}
-        </div>
-    </div>
-</div>
-
-<!-- Import Modal -->
-<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('super_admin.attendance.import') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="importModalLabel">Import Data Absensi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
-                        <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">
-                    </div>
-                    <div class="mb-3">
-                        <a href="{{ route('super_admin.attendance.template') }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-download me-1"></i> Download Template
-                        </a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

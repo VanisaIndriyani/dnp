@@ -202,7 +202,7 @@
                             <td>
                                 <span class="badge bg-light text-muted border">{{ ucfirst($history->user->division ?? '-') }}</span>
                             </td>
-                            <td class="text-muted small">-</td>
+                            <td class="text-muted small">{{ $history->sub_categories ?? '-' }}</td>
                             <td class="text-center text-muted">{{ $history->mc_score }}</td>
                             <td class="text-center text-muted">{{ $history->essay_score }}</td>
                             <td class="text-center">

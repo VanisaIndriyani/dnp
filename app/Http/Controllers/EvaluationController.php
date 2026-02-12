@@ -337,12 +337,24 @@ class EvaluationController extends Controller
     {
         $result = EvaluationResult::findOrFail($id);
         
+        // Get sub categories from answers before deleting
+        $subCategories = EvaluationAnswer::where('user_id', $result->user_id)
+            ->with(['evaluation' => function ($query) {
+                $query->withTrashed();
+            }])
+            ->get()
+            ->pluck('evaluation.sub_category')
+            ->filter()
+            ->unique()
+            ->implode(', ');
+
         // Archive to History
         \App\Models\EvaluationHistory::create([
             'user_id' => $result->user_id,
             'score' => $result->score,
             'mc_score' => $result->mc_score,
             'essay_score' => $result->essay_score,
+            'sub_categories' => $subCategories,
             'completed_at' => $result->created_at,
             'archived_at' => now(),
         ]);
@@ -527,27 +539,23 @@ class EvaluationController extends Controller
             if ($request->filled('end_date')) {
                 $historyQuery->whereDate('archived_at', '<=', $request->end_date);
             }
-            // Note: History does not support category filter as it's not stored in history table
+            
+            // Sub Category Filtering for History
+            if ($request->filled('sub_category')) {
+                $historyQuery->where('sub_categories', 'like', '%' . $request->sub_category . '%');
+            }
 
             $historyResults = $historyQuery->get()->map(function($item) {
                 $item->type = 'history';
                 $item->status = 'archived';
                 $item->sort_date = $item->archived_at;
-                $item->category_name = '-';
+                $item->category_name = $item->sub_categories ?? '-';
                 return $item;
             });
 
             // 4. Merge and Sort
-            // If category filter is active, history results (which are '-') might need to be filtered out?
-            // The user didn't specify, but usually if I filter by "Safety", I expect only Safety.
-            // Since history doesn't have category, should I include them or exclude them?
-            // If I exclude them, the user can't see history when filtering.
-            // But if I include them, the filter is "loose".
-            // Let's exclude history if category filter is present, consistent with "filter".
-            if ($request->filled('sub_category')) {
-                $historyResults = collect([]);
-            }
-
+            // Both Active and History are now filtered by sub_category if present.
+            
             $merged = $activeResults->concat($historyResults)->sortByDesc('sort_date')->values();
 
             // 5. Paginate
@@ -667,9 +675,9 @@ class EvaluationController extends Controller
                 }
             }
 
-            // Sub Category Filtering (History doesn't support this)
+            // Sub Category Filtering for History
             if ($request->filled('sub_category')) {
-                $historyQuery->whereRaw('1 = 0');
+                $historyQuery->where('sub_categories', 'like', '%' . $request->sub_category . '%');
             }
 
             $historyResults = $historyQuery->latest('archived_at')->get();

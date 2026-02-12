@@ -311,7 +311,7 @@
                                 <span class="badge bg-light text-secondary border">{{ ucfirst($history->user->division ?? '-') }}</span>
                             </td>
                             <td>
-                                <span class="text-muted small">-</span>
+                                <span class="text-muted small">{{ $history->sub_categories ?? '-' }}</span>
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary" title="Nilai PG">
@@ -375,20 +375,21 @@
                 @csrf
                 <div class="modal-body">
                     <div class="text-center mb-4 mt-2">
-                        <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
-                            <span class="h4 mb-0 fw-bold text-primary">{{ $passingGrade }}</span>
+                        <div class="avatar-sm rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px; background-color: rgba(198, 40, 40, 0.1);">
+                            <span class="h4 mb-0 fw-bold" style="color: var(--primary-color);">{{ $passingGrade }}</span>
                         </div>
-                        <small class="text-muted">Nilai minimal saat ini</small>
+                        <p class="text-muted small mb-0">Nilai Passing Grade Saat Ini</p>
                     </div>
                     
-                    <div class="form-floating mb-1">
-                        <input type="number" name="passing_grade" class="form-control" id="kkmInput" value="{{ $passingGrade }}" min="0" max="100" required>
-                        <label for="kkmInput">Nilai Baru (0-100)</label>
+                    <div class="mb-3">
+                        <label for="passing_grade" class="form-label small fw-bold text-muted">Nilai Baru</label>
+                        <input type="number" class="form-control text-center fw-bold fs-5" id="passing_grade" name="passing_grade" value="{{ $passingGrade }}" min="0" max="100" required>
+                        <div class="form-text text-center small">Masukkan nilai antara 0 - 100</div>
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm px-4">Simpan</button>
+                    <button type="submit" class="btn btn-sm text-white" style="background-color: var(--primary-color);">Simpan Perubahan</button>
                 </div>
             </form>
         </div>

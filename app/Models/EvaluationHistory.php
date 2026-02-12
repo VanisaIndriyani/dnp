@@ -14,6 +14,7 @@ class EvaluationHistory extends Model
         'score',
         'mc_score',
         'essay_score',
+        'sub_categories',
         'completed_at',
         'archived_at',
     ];
