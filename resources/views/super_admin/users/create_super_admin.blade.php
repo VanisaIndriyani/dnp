@@ -10,8 +10,8 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
         <form action="{{ route('super_admin.users.store') }}" method="POST">
             @csrf
             <div class="row">
@@ -51,13 +51,13 @@
             <!-- Hidden Fields for Role -->
             <input type="hidden" name="role" value="super_admin">
 
-            <div class="alert alert-info mt-3">
-                <i class="fas fa-info-circle me-2"></i> Akun Super Admin akan langsung aktif dan memiliki akses penuh ke semua fitur sistem.
+            <div class="alert alert-info mt-3 bg-light border-0 text-dark">
+                <i class="fas fa-info-circle me-2 text-primary"></i> Akun Super Admin akan langsung aktif dan memiliki akses penuh ke semua fitur sistem.
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <a href="{{ route('super_admin.users.index') }}" class="btn btn-secondary me-2">Batal</a>
-                <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color);">
+                <a href="{{ route('super_admin.users.index') }}" class="btn btn-light border me-2">Batal</a>
+                <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color); border-color: var(--primary-color);">
                     <i class="fas fa-user-shield me-2"></i>Simpan Super Admin
                 </button>
             </div>

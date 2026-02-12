@@ -9,8 +9,8 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
         <form action="{{ route('super_admin.users.update', $user) }}" method="POST">
             @csrf
             @method('PUT')
@@ -23,7 +23,7 @@
                     @enderror
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="nik" class="form-label">NIK</label>
+                    <label for="nik" class="form-label">NIK (Username Login)</label>
                     <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" value="{{ old('nik', $user->nik) }}" required>
                     @error('nik')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -32,13 +32,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="email" class="form-label">Email (Opsional)</label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}">
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+               
                 <div class="col-md-6 mb-3">
                     <label for="password" class="form-label">Password (Kosongkan jika tidak ingin mengubah)</label>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
@@ -90,8 +84,10 @@
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <a href="{{ route('super_admin.users.index') }}" class="btn btn-secondary me-2">Batal</a>
-                <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color);">Update User</button>
+                <a href="{{ route('super_admin.users.index') }}" class="btn btn-light border me-2">Batal</a>
+                <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color); border-color: var(--primary-color);">
+                    <i class="fas fa-save me-2"></i>Update User
+                </button>
             </div>
         </form>
     </div>

@@ -9,21 +9,21 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
         <form action="{{ route('super_admin.users.store') }}" method="POST">
             @csrf
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="name" class="form-label">Nama Lengkap</label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required placeholder="Nama Lengkap">
                     @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="nik" class="form-label">NIK</label>
-                    <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" value="{{ old('nik') }}" required>
+                    <label for="nik" class="form-label">NIK (Username Login)</label>
+                    <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" value="{{ old('nik') }}" required placeholder="Contoh: 12345678">
                     @error('nik')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -34,7 +34,7 @@
                
                 <div class="col-md-6 mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required placeholder="Minimal 6 karakter">
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -70,8 +70,10 @@
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <a href="{{ route('super_admin.users.index') }}" class="btn btn-secondary me-2">Batal</a>
-                <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color);">Simpan User</button>
+                <a href="{{ route('super_admin.users.index') }}" class="btn btn-light border me-2">Batal</a>
+                <button type="submit" class="btn btn-danger" style="background-color: var(--primary-color); border-color: var(--primary-color);">
+                    <i class="fas fa-save me-2"></i>Simpan User
+                </button>
             </div>
         </form>
     </div>
