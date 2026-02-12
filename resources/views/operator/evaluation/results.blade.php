@@ -10,17 +10,6 @@
         <h2 class="mb-1 fw-bold text-dark">Hasil Nilai Evaluasi</h2>
         <p class="text-muted mb-0">Lihat riwayat dan hasil evaluasi Anda.</p>
     </div>
-    
-    {{-- KKM WIDGET --}}
-    <div class="bg-white px-4 py-2 rounded-3 shadow-sm border d-flex align-items-center gap-3" style="border-left: 4px solid #C62828 !important;">
-        <div class="d-flex flex-column">
-            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Passing Grade (KKM)</span>
-            <div class="d-flex align-items-center gap-2">
-                <span class="h4 mb-0 fw-bold" style="color: #C62828;">{{ $passingGrade }}</span>
-                <span class="badge bg-light border rounded-pill px-2 py-1" style="color: #C62828; font-size: 0.7rem;">Poin</span>
-            </div>
-        </div>
-    </div>
 </div>
 
 @if(session('info'))
@@ -82,11 +71,7 @@
                         <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Operator</th>
                         <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bagian</th>
                         <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kategori Soal</th>
-                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nilai PG</th>
-                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nilai Essay</th>
-                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
                         <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Penilaian</th>
                         <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal</th>
                     </tr>
                 </thead>
@@ -109,28 +94,6 @@
                             </td>
                             <td>
                                 <span class="text-dark text-sm fw-bold">{{ $result->category_name }}</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">
-                                    {{ $result->mc_score }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">
-                                    {{ $result->essay_score }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <span class="fw-bold text-{{ $result->score >= $passingGrade ? 'success' : 'danger' }}" style="font-size: 1rem;">
-                                    {{ $result->score }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                @if($result->score >= $passingGrade)
-                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">LULUS</span>
-                                @else
-                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">TIDAK</span>
-                                @endif
                             </td>
                             <td class="text-center">
                                 @if($result->type == 'active')
@@ -165,7 +128,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center justify-content-center">
                                     <div class="rounded-circle p-4 mb-3" style="background-color: #ffebee;">
                                         <i class="fas fa-clipboard-list fa-3x" style="color: #C62828;"></i>

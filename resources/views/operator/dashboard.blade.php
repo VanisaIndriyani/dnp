@@ -38,7 +38,7 @@
 
 <div class="row g-4 mb-4">
     <!-- Card 1: Status Absensi Hari Ini -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-md-6 col-lg-6">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
@@ -70,36 +70,9 @@
         </div>
     </div>
 
-    <!-- Card 2: Nilai Evaluasi -->
-    <div class="col-md-6 col-lg-4">
-        <div class="stats-card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stats-title">Nilai Evaluasi Terakhir</div>
-                    <div class="stats-value">
-                        @php
-                            $lastResult = \App\Models\EvaluationResult::where('user_id', auth()->id())
-                                        ->latest()
-                                        ->first();
-                        @endphp
-                        {{ $lastResult ? $lastResult->score : '-' }}
-                    </div>
-                </div>
-                <div class="stats-icon" style="background-color: #ffebee; color: #C62828;">
-                    <i class="fas fa-star"></i>
-                </div>
-            </div>
-            <div class="mt-3 text-muted small">
-                @if($lastResult)
-                    <i class="fas fa-check text-success me-1"></i> Diselesaikan pada {{ $lastResult->created_at->format('d M Y') }}
-                @else
-                    <i class="fas fa-info-circle text-info me-1"></i> Belum ada data evaluasi
-                @endif
-            </div>
-        </div>
-    </div>
+
     <!-- Card 3: Materi Tersedia -->
-    <div class="col-md-6 col-lg-4">
+    <div class="col-md-6 col-lg-6">
         <div class="stats-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
