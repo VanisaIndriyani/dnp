@@ -63,6 +63,11 @@ class EvaluationController extends Controller
             'answers' => 'required|array',
         ]);
 
+        // Prevent duplicate submission
+        if (EvaluationResult::where('user_id', auth()->id())->exists()) {
+            return redirect()->route(auth()->user()->role . '.evaluation.results')->with('error', 'Anda sudah mengerjakan evaluasi.');
+        }
+
         $userDivision = auth()->user()->division;
         
         if ($userDivision) {

@@ -12,12 +12,12 @@
     </div>
     
     {{-- KKM WIDGET --}}
-    <div class="bg-white px-4 py-2 rounded-3 shadow-sm border d-flex align-items-center gap-3">
+    <div class="bg-white px-4 py-2 rounded-3 shadow-sm border d-flex align-items-center gap-3" style="border-left: 4px solid #C62828 !important;">
         <div class="d-flex flex-column">
             <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Passing Grade (KKM)</span>
             <div class="d-flex align-items-center gap-2">
-                <span class="h4 mb-0 fw-bold text-primary">{{ $passingGrade }}</span>
-                <span class="badge bg-light text-primary border rounded-pill px-2 py-1" style="font-size: 0.7rem;">Poin</span>
+                <span class="h4 mb-0 fw-bold" style="color: #C62828;">{{ $passingGrade }}</span>
+                <span class="badge bg-light border rounded-pill px-2 py-1" style="color: #C62828; font-size: 0.7rem;">Poin</span>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
 @endif
 
 {{-- MAIN CONTENT --}}
-<div class="card shadow-sm border-0 mb-5">
+<div class="card shadow-sm border-0 mb-5" style="border-top: 3px solid #C62828;">
     {{-- TOOLBAR HEADER --}}
     <div class="card-header bg-white py-3 px-4 border-bottom">
         <div class="row g-3 align-items-center justify-content-between">
@@ -46,7 +46,7 @@
             {{-- Left: Title --}}
             <div class="col-12 col-xl-auto">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                    <div class="p-2 rounded" style="background-color: #ffebee; color: #C62828;">
                         <i class="fas fa-table"></i>
                     </div>
                     <div>
@@ -167,8 +167,8 @@
                         <tr>
                             <td colspan="10" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center justify-content-center">
-                                    <div class="bg-light rounded-circle p-4 mb-3">
-                                        <i class="fas fa-clipboard-list fa-3x text-muted opacity-50"></i>
+                                    <div class="rounded-circle p-4 mb-3" style="background-color: #ffebee;">
+                                        <i class="fas fa-clipboard-list fa-3x" style="color: #C62828;"></i>
                                     </div>
                                     <h6 class="text-muted fw-bold">Belum ada data evaluasi</h6>
                                     <p class="text-muted small mb-0">Hasil evaluasi Anda akan muncul di sini.</p>
