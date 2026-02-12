@@ -93,7 +93,11 @@ class EvaluationController extends Controller
                 $scoreForQuestion = 0; // Pending grading
             } else {
                 // Multiple Choice
-                if ($userAnswerText == $question->correct_answer) {
+                // Normalize both answers for comparison
+                $normalizedUserAnswer = strtolower(trim($userAnswerText ?? ''));
+                $normalizedCorrectAnswer = strtolower(trim($question->correct_answer ?? ''));
+                
+                if ($normalizedUserAnswer === $normalizedCorrectAnswer) {
                     $scoreForQuestion = 100;
                 }
             }
@@ -225,7 +229,7 @@ class EvaluationController extends Controller
                 'option_b' => $q['type'] == 'multiple_choice' ? $q['option_b'] : null,
                 'option_c' => $q['type'] == 'multiple_choice' ? $q['option_c'] : null,
                 'option_d' => $q['type'] == 'multiple_choice' ? $q['option_d'] : null,
-                'correct_answer' => $q['type'] == 'multiple_choice' ? $q['correct_answer'] : null,
+                'correct_answer' => $q['type'] == 'multiple_choice' ? strtolower(trim($q['correct_answer'])) : null,
             ]);
         }
 
@@ -268,7 +272,7 @@ class EvaluationController extends Controller
             'option_b' => $request->type == 'multiple_choice' ? $request->option_b : null,
             'option_c' => $request->type == 'multiple_choice' ? $request->option_c : null,
             'option_d' => $request->type == 'multiple_choice' ? $request->option_d : null,
-            'correct_answer' => $request->type == 'multiple_choice' ? $request->correct_answer : null,
+            'correct_answer' => $request->type == 'multiple_choice' ? strtolower(trim($request->correct_answer)) : null,
         ]);
 
         return redirect()->route(auth()->user()->role . '.evaluation.index', [

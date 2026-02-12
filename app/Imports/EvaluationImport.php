@@ -54,6 +54,11 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
         $optionD = $row['option_d'] ?? $row['opsi_d'] ?? $row['pilihan_d'] ?? $row['d'] ?? null;
         $correctAnswer = $row['correct_answer'] ?? $row['kunci'] ?? $row['jawaban'] ?? $row['benar'] ?? $row['kunci_jawaban'] ?? $row['jawaban_benar'] ?? null;
         
+        // Normalize correct answer to lowercase and trim
+        if ($correctAnswer) {
+            $correctAnswer = strtolower(trim($correctAnswer));
+        }
+        
         return new Evaluation([
             'type'           => $type,
             'category'       => $category,
