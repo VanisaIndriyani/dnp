@@ -19,18 +19,18 @@
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body p-4">
         <form action="{{ route('super_admin.attendance.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="date" class="form-label fw-bold text-secondary small text-uppercase">Tanggal</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-calendar"></i></span>
-                    <input type="date" class="form-control border-start-0 ps-0" id="date" name="date" value="{{ request('date') }}">
+                    <input type="date" class="form-control border-start-0 ps-0" id="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="division" class="form-label fw-bold text-secondary small text-uppercase">Bagian</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-layer-group"></i></span>
-                    <select class="form-select border-start-0 ps-0" id="division" name="division">
+                    <select class="form-select border-start-0 ps-0" id="division" name="division" onchange="this.form.submit()">
                         <option value="">Semua Bagian</option>
                         <option value="case" {{ request('division') == 'case' ? 'selected' : '' }}>Case</option>
                         <option value="cover" {{ request('division') == 'cover' ? 'selected' : '' }}>Cover</option>
@@ -39,21 +39,17 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="status" class="form-label fw-bold text-secondary small text-uppercase">Status</label>
                 <div class="input-group">
                     <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-filter"></i></span>
-                    <select class="form-select border-start-0 ps-0" id="status" name="status">
+                    <select class="form-select border-start-0 ps-0" id="status" name="status" onchange="this.form.submit()">
                         <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
                         <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir (Belum Absen)</option>
                     </select>
                 </div>
             </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn w-100 fw-bold shadow-sm text-white" style="background-color: var(--primary-color);">
-                    <i class="fas fa-filter me-2"></i>Terapkan Filter
-                </button>
-            </div>
+            {{-- Filter button removed for auto-submit --}}
         </form>
     </div>
 </div>
