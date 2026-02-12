@@ -97,110 +97,7 @@
 
 {{-- MAIN CONTENT --}}
 <div class="card shadow-sm border-0 mb-5">
-    {{-- TOOLBAR HEADER --}}
-    <div class="card-header bg-white py-3 px-4 border-bottom">
-        <div class="row g-3 align-items-center justify-content-between">
-            
-            {{-- Left: Title & Active Filter Indicator --}}
-            <div class="col-12 col-xl-auto">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="p-2 rounded" style="background-color: rgba(198, 40, 40, 0.1); color: var(--primary-color);">
-                        <i class="fas fa-table"></i>
-                    </div>
-                    <div>
-                        <h5 class="mb-0 fw-bold text-dark">Daftar Nilai</h5>
-                        <small class="text-muted">
-                            @if(isset($division) && !request('view_all'))
-                                Menampilkan data <span class="fw-bold text-dark">Bagian {{ ucfirst($division) }}</span>
-                            @else
-                                Menampilkan <span class="fw-bold text-dark">Semua Bagian</span>
-                            @endif
-                        </small>
-                    </div>
-                </div>
-            </div>
-            
-            {{-- Right: Filters & Actions --}}
-            <div class="col-12 col-xl-auto">
-                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-xl-end">
-                    <form action="{{ route('admin.evaluation.results') }}" method="GET" class="w-100">
-                        <div class="d-flex flex-wrap gap-3 align-items-end">
-                            
-                            {{-- Search --}}
-                            <div class="flex-grow-1" style="min-width: 200px;">
-                                <label class="small fw-bold text-muted mb-1"><i class="fas fa-search me-1" style="color: var(--primary-color);"></i> Pencarian</label>
-                                <div class="input-group input-group-sm shadow-sm rounded-3">
-                                    <span class="input-group-text bg-white border-end-0 ps-3"><i class="fas fa-search text-muted"></i></span>
-                                    <input type="text" name="nik" class="form-control border-start-0 ps-2" placeholder="Cari NIK..." value="{{ request('nik') }}">
-                                </div>
-                            </div>
-
-                            {{-- Division --}}
-                            <div style="min-width: 140px;">
-                                <label class="small fw-bold text-muted mb-1"><i class="fas fa-building me-1" style="color: var(--primary-color);"></i> Bagian</label>
-                                <select name="division" class="form-select form-select-sm shadow-sm rounded-3" onchange="this.form.submit()">
-                                    <option value="">Semua Bagian</option>
-                                    <option value="cover" {{ request('division') == 'cover' ? 'selected' : '' }}>Cover</option>
-                                    <option value="case" {{ request('division') == 'case' ? 'selected' : '' }}>Case</option>
-                                    <option value="inner" {{ request('division') == 'inner' ? 'selected' : '' }}>Inner</option>
-                                    <option value="endplate" {{ request('division') == 'endplate' ? 'selected' : '' }}>Endplate</option>
-                                </select>
-                            </div>
-                            
-                            {{-- Status --}}
-                            <div style="min-width: 140px;">
-                                <label class="small fw-bold text-muted mb-1"><i class="fas fa-check-circle me-1" style="color: var(--primary-color);"></i> Status</label>
-                                <select name="status_kelulusan" class="form-select form-select-sm shadow-sm rounded-3" onchange="this.form.submit()">
-                                    <option value="">Semua Status</option>
-                                    <option value="lulus" {{ request('status_kelulusan') == 'lulus' ? 'selected' : '' }}>Lulus</option>
-                                    <option value="tidak_lulus" {{ request('status_kelulusan') == 'tidak_lulus' ? 'selected' : '' }}>Tidak Lulus</option>
-                                </select>
-                            </div>
-
-                            {{-- Category --}}
-                            <div style="min-width: 140px;">
-                                <label class="small fw-bold text-muted mb-1"><i class="fas fa-tags me-1" style="color: var(--primary-color);"></i> Kategori</label>
-                                <select name="sub_category" class="form-select form-select-sm shadow-sm rounded-3" onchange="this.form.submit()">
-                                    <option value="">Semua Kategori</option>
-                                    @foreach($subCategories as $cat)
-                                        <option value="{{ $cat }}" {{ request('sub_category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- Date Range --}}
-                            <div style="min-width: 220px;">
-                                <label class="small fw-bold text-muted mb-1"><i class="fas fa-calendar-alt me-1" style="color: var(--primary-color);"></i> Rentang Tanggal</label>
-                                <div class="input-group input-group-sm shadow-sm rounded-3">
-                                    <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" onchange="this.form.submit()">
-                                    <span class="input-group-text bg-white border-start-0 border-end-0"><i class="fas fa-arrow-right fa-xs text-muted"></i></span>
-                                    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" onchange="this.form.submit()">
-                                </div>
-                            </div>
-
-                            {{-- View All --}}
-                            <div class="pb-1">
-                                <div class="form-check form-switch mb-0" title="Tampilkan semua data tanpa filter bagian">
-                                    <input class="form-check-input" type="checkbox" name="view_all" value="1" id="viewAllCheck" {{ request('view_all') ? 'checked' : '' }} style="cursor: pointer;" onchange="this.form.submit()">
-                                    <label class="form-check-label small fw-bold text-muted" for="viewAllCheck" style="cursor: pointer;">All</label>
-                                </div>
-                            </div>
-
-                            <div class="vr mx-1 d-none d-xl-block bg-secondary opacity-25 py-3 align-self-center"></div>
-
-                            {{-- Export Button (GREEN) --}}
-                            <div class="ms-auto pb-0">
-                                <a href="{{ route('admin.evaluation.results.export', array_merge(request()->query(), ['export_type' => 'all'])) }}" class="btn btn-success btn-sm shadow-sm rounded-3 fw-bold px-3 py-2 d-flex align-items-center gap-2">
-                                    <i class="fas fa-file-excel"></i> Export Excel
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    
     {{-- TABLE CONTENT --}}
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -217,6 +114,7 @@
                         <th class="text-center py-3" width="10%">Status</th>
                         <th class="text-center py-3" width="10%">Penilaian</th>
                         <th class="text-end pe-4 py-3" width="9%">Tanggal</th>
+                        <th class="text-center py-3" width="10%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="border-top-0">
@@ -264,7 +162,7 @@
                                     </span>
                                 @else
                                     <span class="badge bg-light text-success border border-success">
-                                        <i class="fas fa-check-double me-1 small"></i>Selesai
+                                        <i class="fas fa-check me-1 small"></i>Selesai
                                     </span>
                                 @endif
                             </td>
@@ -272,11 +170,15 @@
                                 <i class="far fa-calendar me-1"></i>{{ $result->created_at->format('d/m/y') }}<br>
                                 <i class="far fa-clock me-1"></i>{{ $result->created_at->format('H:i') }}
                             </td>
+                            <td class="text-center">
+                                {{-- Read Only for Admin --}}
+                                <span class="text-muted">-</span>
+                            </td>
                         </tr>
                     @empty
                         @if(!isset($histories) || $histories->count() == 0)
                         <tr>
-                            <td colspan="10" class="text-center py-5">
+                            <td colspan="11" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center justify-content-center opacity-50">
                                     <i class="fas fa-clipboard-list fa-4x mb-3 text-secondary"></i>
                                     <h5 class="text-muted">Tidak ada data hasil evaluasi</h5>
@@ -286,7 +188,52 @@
                         @endif
                     @endforelse
 
-
+                    {{-- History Section (Integrated) --}}
+                    @if(isset($histories) && $histories->count() > 0)
+                        @foreach($histories as $history)
+                        <tr>
+                            <td class="ps-4 fw-bold text-muted">{{ $results->total() + $loop->iteration }}</td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold text-muted">{{ $history->user->name }}</span>
+                                    <small class="text-muted">{{ $history->user->nik }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-muted border">{{ ucfirst($history->user->division ?? '-') }}</span>
+                            </td>
+                            <td class="text-muted small">-</td>
+                            <td class="text-center text-muted">{{ $history->mc_score }}</td>
+                            <td class="text-center text-muted">{{ $history->essay_score }}</td>
+                            <td class="text-center">
+                                <span class="fw-bold fs-6 text-muted">
+                                    {{ $history->score }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                @if($history->score >= $passingGrade)
+                                    <span class="badge bg-success bg-opacity-50 rounded-pill px-3">LULUS</span>
+                                @else
+                                    <span class="badge bg-danger bg-opacity-50 rounded-pill px-3">TIDAK</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-white text-secondary border">
+                                    <i class="fas fa-trash me-1 small"></i>Arsip
+                                </span>
+                            </td>
+                            <td class="text-end pe-4 text-muted small">
+                                <span class="fw-bold text-secondary">Reset:</span><br>
+                                {{ $history->archived_at->format('d/m/y') }}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-muted">
+                                    <i class="fas fa-check-circle me-1"></i>Selesai
+                                </span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
