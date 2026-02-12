@@ -22,14 +22,14 @@
             <div class="col-md-3">
                 <label for="date" class="form-label fw-bold text-secondary small text-uppercase">Tanggal</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-calendar"></i></span>
+                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-calendar"></i></span>
                     <input type="date" class="form-control border-start-0 ps-0" id="date" name="date" value="{{ request('date') }}">
                 </div>
             </div>
             <div class="col-md-3">
                 <label for="division" class="form-label fw-bold text-secondary small text-uppercase">Bagian</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-layer-group"></i></span>
+                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-layer-group"></i></span>
                     <select class="form-select border-start-0 ps-0" id="division" name="division">
                         <option value="">Semua Bagian</option>
                         <option value="case" {{ request('division') == 'case' ? 'selected' : '' }}>Case</option>
@@ -42,7 +42,7 @@
             <div class="col-md-3">
                 <label for="status" class="form-label fw-bold text-secondary small text-uppercase">Status</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-filter"></i></span>
+                    <span class="input-group-text bg-white text-muted border-end-0"><i class="fas fa-filter"></i></span>
                     <select class="form-select border-start-0 ps-0" id="status" name="status">
                         <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
                         <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir (Belum Absen)</option>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <button type="submit" class="btn btn-danger w-100 fw-bold shadow-sm" style="background-color: var(--primary-color);">
+                <button type="submit" class="btn w-100 fw-bold shadow-sm text-white" style="background-color: var(--primary-color);">
                     <i class="fas fa-filter me-2"></i>Terapkan Filter
                 </button>
             </div>
@@ -60,7 +60,7 @@
 
 <!-- Data Table -->
 <div class="card border-0 shadow-sm">
-    <div class="card-header text-white" style="background-color: #C62828;">
+    <div class="card-header text-white" style="background-color: var(--primary-color);">
         <h5 class="mb-0 fw-bold"><i class="fas fa-list me-2"></i>Daftar Absensi</h5>
     </div>
     <div class="card-body p-0">

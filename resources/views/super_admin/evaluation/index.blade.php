@@ -26,8 +26,8 @@
             <a href="{{ route('super_admin.evaluation.index', ['category' => $cat]) }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm h-100 hover-card">
                     <div class="card-body text-center p-4">
-                        <div class="avatar-lg mx-auto mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-layer-group fa-2x text-primary"></i>
+                        <div class="avatar-lg mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: rgba(198, 40, 40, 0.1);">
+                            <i class="fas fa-layer-group fa-2x" style="color: var(--primary-color);"></i>
                         </div>
                         <h4 class="card-title text-dark mb-1">{{ ucfirst($cat) }}</h4>
                         <p class="text-muted small mb-3">Kelola soal untuk bagian {{ ucfirst($cat) }}</p>
@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div class="card-footer bg-transparent border-0 pb-3">
-                        <span class="btn btn-outline-primary btn-sm w-100 rounded-pill">Lihat Soal</span>
+                        <span class="btn btn-sm w-100 rounded-pill" style="color: var(--primary-color); border-color: var(--primary-color); background-color: white;">Lihat Soal</span>
                     </div>
                 </div>
             </a>
@@ -62,7 +62,8 @@
         }
         .hover-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 10px 20px rgba(198, 40, 40, 0.15) !important;
+            border: 1px solid var(--primary-color) !important;
         }
     </style>
 
@@ -83,7 +84,7 @@
                 <form action="{{ route('super_admin.evaluation.index') }}" method="GET" class="d-inline-block me-2">
                     <input type="hidden" name="category" value="{{ $category }}">
                     <div class="input-group shadow-sm rounded-pill overflow-hidden border" style="background: white;">
-                        <span class="input-group-text bg-transparent border-0 pe-0 ps-3 text-primary">
+                        <span class="input-group-text bg-transparent border-0 pe-0 ps-3" style="color: var(--primary-color);">
                             <i class="fas fa-filter fa-sm"></i>
                         </span>
                         <select name="sub_category" class="form-select border-0 shadow-none ps-2 fw-bold text-dark" onchange="this.form.submit()" style="min-width: 160px; cursor: pointer; background-color: transparent; font-size: 0.9rem;">
