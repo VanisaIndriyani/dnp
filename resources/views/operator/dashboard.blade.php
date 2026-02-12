@@ -20,14 +20,14 @@
             </div>
         @endif
 
-        <div class="card bg-white border-0 shadow-sm p-4">
+        <div class="card bg-white border-0 shadow-sm p-4" style="border-top: 3px solid #C62828;">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <h2 class="mb-1 fw-bold text-dark">Dashboard Operator</h2>
-                    <p class="text-muted mb-0">Halo, <span class="text-danger fw-bold">{{ auth()->user()->name }}</span>! Selamat bekerja dan tetap semangat.</p>
+                    <p class="text-muted mb-0">Halo, <span class="fw-bold" style="color: #C62828;">{{ auth()->user()->name }}</span>! Selamat bekerja dan tetap semangat.</p>
                 </div>
                 <div class="d-none d-md-block">
-                    <span class="badge bg-danger p-2 px-3 rounded-pill">
+                    <span class="badge p-2 px-3 rounded-pill" style="background-color: #C62828;">
                         <i class="fas fa-calendar-alt me-2"></i> {{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}
                     </span>
                 </div>
@@ -56,7 +56,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="stats-icon">
+                <div class="stats-icon" style="background-color: #ffebee; color: #C62828;">
                     <i class="fas fa-clock"></i>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                         {{ $lastResult ? $lastResult->score : '-' }}
                     </div>
                 </div>
-                <div class="stats-icon info">
+                <div class="stats-icon" style="background-color: #ffebee; color: #C62828;">
                     <i class="fas fa-star"></i>
                 </div>
             </div>
@@ -98,7 +98,6 @@
             </div>
         </div>
     </div>
-
     <!-- Card 3: Materi Tersedia -->
     <div class="col-md-6 col-lg-4">
         <div class="stats-card">
@@ -107,7 +106,7 @@
                     <div class="stats-title">Materi Tersedia</div>
                     <div class="stats-value">{{ \App\Models\Material::count() }}</div>
                 </div>
-                <div class="stats-icon warning">
+                <div class="stats-icon" style="background-color: #ffebee; color: #C62828;">
                     <i class="fas fa-book"></i>
                 </div>
             </div>
@@ -124,11 +123,11 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-white border-bottom-0 pt-4 px-4">
-                <h5 class="mb-0 fw-bold"><i class="fas fa-bullhorn text-danger me-2"></i>Pengumuman & Informasi</h5>
+                <h5 class="mb-0 fw-bold"><i class="fas fa-bullhorn me-2" style="color: #C62828;"></i>Pengumuman & Informasi</h5>
             </div>
             <div class="card-body px-4 pb-4">
-                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center" role="alert" style="background-color: #E1F5FE; color: #0277BD;">
-                    <i class="fas fa-info-circle fa-2x me-3"></i>
+                <div class="alert border-0 shadow-sm d-flex align-items-center" role="alert" style="background-color: #ffebee; color: #b71c1c;">
+                    <i class="fas fa-info-circle fa-2x me-3" style="color: #C62828;"></i>
                     <div>
                         <h5 class="alert-heading fw-bold mb-1">Penting!</h5>
                         <p class="mb-0">Jangan lupa untuk melakukan <strong>absensi</strong> saat tiba di lokasi kerja. Selalu patuhi protokol keselamatan kerja (K3) di setiap aktivitas.</p>
