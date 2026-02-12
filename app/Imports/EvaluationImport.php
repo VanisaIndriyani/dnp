@@ -10,10 +10,12 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
 {
     protected $defaultCategory;
+    protected $subCategory;
 
-    public function __construct($defaultCategory = null)
+    public function __construct($defaultCategory = null, $subCategory = null)
     {
         $this->defaultCategory = $defaultCategory;
+        $this->subCategory = $subCategory;
     }
 
     public function model(array $row)
@@ -47,6 +49,7 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
         return new Evaluation([
             'type'           => $type,
             'category'       => $category,
+            'sub_category'   => $this->subCategory,
             'question'       => $row['question'],
             'option_a'       => $row['option_a'] ?? null,
             'option_b'       => $row['option_b'] ?? null,

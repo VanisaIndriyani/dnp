@@ -61,6 +61,7 @@ Route::prefix('super_admin')->name('super_admin.')->middleware(['auth'])->group(
     Route::delete('/evaluation-results/{result}', [EvaluationController::class, 'destroyResult'])->name('evaluation.results.destroy');
     Route::get('/evaluation-results/{result}/grade', [EvaluationController::class, 'grade'])->name('evaluation.grade');
     Route::post('/evaluation-results/{result}/grade', [EvaluationController::class, 'storeGrade'])->name('evaluation.storeGrade');
+    Route::post('/evaluation/update-passing-grade', [EvaluationController::class, 'updatePassingGrade'])->name('evaluation.update_passing_grade');
 
     // Materials
     Route::resource('materials', MaterialController::class);

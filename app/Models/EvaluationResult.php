@@ -20,19 +20,17 @@ class EvaluationResult extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function answers()
+    {
+        return $this->hasMany(EvaluationAnswer::class, 'user_id', 'user_id');
+    }
+
     public function getMcScoreAttribute()
     {
-        $userDivision = $this->user->division;
-        $answers = EvaluationAnswer::where('user_id', $this->user_id)
-            ->whereHas('evaluation', function ($query) use ($userDivision) {
-                $query->withTrashed(); // Include soft deleted questions
-                $query->where('type', 'multiple_choice');
-                if ($userDivision) {
-                    $query->where('category', $userDivision);
-                } else {
-                    $query->whereNull('category');
-                }
-            })->get();
+        $answers = $this->answers()->whereHas('evaluation', function ($query) {
+            $query->withTrashed(); // Include soft deleted questions
+            $query->where('type', 'multiple_choice');
+        })->get();
 
         if ($answers->count() == 0) return 0;
         return round($answers->avg('score'));
@@ -40,19 +38,23 @@ class EvaluationResult extends Model
 
     public function getEssayScoreAttribute()
     {
-        $userDivision = $this->user->division;
-        $answers = EvaluationAnswer::where('user_id', $this->user_id)
-            ->whereHas('evaluation', function ($query) use ($userDivision) {
-                $query->withTrashed(); // Include soft deleted questions
-                $query->where('type', 'essay');
-                if ($userDivision) {
-                    $query->where('category', $userDivision);
-                } else {
-                    $query->whereNull('category');
-                }
-            })->get();
+        $answers = $this->answers()->whereHas('evaluation', function ($query) {
+            $query->withTrashed(); // Include soft deleted questions
+            $query->where('type', 'essay');
+        })->get();
 
         if ($answers->count() == 0) return 0;
         return round($answers->avg('score'));
+    }
+
+    public function getSubCategoriesAttribute()
+    {
+        return $this->answers()
+            ->with('evaluation')
+            ->get()
+            ->pluck('evaluation.sub_category')
+            ->unique()
+            ->filter()
+            ->implode(', ');
     }
 }

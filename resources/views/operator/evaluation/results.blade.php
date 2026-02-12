@@ -3,9 +3,23 @@
 @section('title', 'Hasil Evaluasi')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-12 d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">Hasil Nilai Evaluasi</h2>
+
+{{-- PAGE HEADER --}}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="mb-1 fw-bold text-dark">Hasil Nilai Evaluasi</h2>
+        <p class="text-muted mb-0">Lihat riwayat dan hasil evaluasi Anda.</p>
+    </div>
+    
+    {{-- KKM WIDGET --}}
+    <div class="bg-white px-4 py-2 rounded-3 shadow-sm border d-flex align-items-center gap-3">
+        <div class="d-flex flex-column">
+            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Passing Grade (KKM)</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="h4 mb-0 fw-bold text-primary">{{ $passingGrade }}</span>
+                <span class="badge bg-light text-primary border rounded-pill px-2 py-1" style="font-size: 0.7rem;">Poin</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -23,46 +37,157 @@
     </div>
 @endif
 
-<div class="card">
+{{-- MAIN CONTENT --}}
+<div class="card shadow-sm border-0 mb-5">
+    {{-- TOOLBAR HEADER --}}
+    <div class="card-header bg-white py-3 px-4 border-bottom">
+        <div class="row g-3 align-items-center justify-content-between">
+            
+            {{-- Left: Title --}}
+            <div class="col-12 col-xl-auto">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold text-dark">Daftar Nilai</h5>
+                        <small class="text-muted">Total {{ $results->total() }} hasil evaluasi</small>
+                    </div>
+                </div>
+            </div>
+            
+            {{-- Right: Filters --}}
+            <div class="col-12 col-xl-auto">
+                <div class="d-flex flex-wrap gap-2 align-items-center justify-content-xl-end">
+                    <form action="{{ route('operator.evaluation.results') }}" method="GET" class="w-100">
+                        <div class="d-flex flex-wrap gap-3 align-items-end">
+                            
+                            {{-- Status --}}
+                            {{-- REMOVED FILTERS AS REQUESTED --}}
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- TABLE --}}
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">No</th>
-                        <th>Nama User</th>
-                        <th>NIK</th>
-                        <th>Bagian</th>
-                        <th>Nilai</th>
-                        <th>Tanggal Evaluasi</th>
+                        <th class="ps-4 py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No</th>
+                        <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Operator</th>
+                        <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bagian</th>
+                        <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kategori Soal</th>
+                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nilai PG</th>
+                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nilai Essay</th>
+                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
+                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                        <th class="py-3 text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Penilaian</th>
+                        <th class="py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($results as $key => $result)
                         <tr>
-                            <td class="ps-4">{{ $results->firstItem() + $key }}</td>
-                            <td>{{ $result->user->name }}</td>
-                            <td>{{ $result->user->nik }}</td>
-                            <td>{{ ucfirst($result->user->division ?? '-') }}</td>
+                            <td class="ps-4">
+                                <span class="text-secondary text-xs font-weight-bold">{{ $results->firstItem() + $key }}</span>
+                            </td>
                             <td>
-                                <span class="badge bg-{{ $result->score >= 70 ? 'success' : 'danger' }} fs-6">
+                                <div class="d-flex flex-column">
+                                    <h6 class="mb-0 text-sm fw-bold text-dark">{{ $result->user->name }}</h6>
+                                    <span class="text-xs text-secondary">{{ $result->user->nik }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-2 py-1">
+                                    {{ ucfirst($result->user->division ?? '-') }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark text-sm fw-bold">{{ $result->category_name }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">
+                                    {{ $result->mc_score }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">
+                                    {{ $result->essay_score }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold text-{{ $result->score >= $passingGrade ? 'success' : 'danger' }}" style="font-size: 1rem;">
                                     {{ $result->score }}
                                 </span>
                             </td>
-                            <td>{{ $result->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="text-center">
+                                @if($result->score >= $passingGrade)
+                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">LULUS</span>
+                                @else
+                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">TIDAK</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($result->type == 'active')
+                                    @if($result->status == 'pending')
+                                        <span class="badge bg-warning text-dark border border-warning">
+                                            <i class="fas fa-spinner fa-spin me-1 small"></i>Menunggu
+                                        </span>
+                                    @else
+                                        <span class="badge bg-light text-success border border-success">
+                                            <i class="fas fa-check-double me-1 small"></i>Selesai
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="badge bg-light text-secondary border border-secondary">
+                                        <i class="fas fa-archive me-1"></i>Arsip
+                                    </span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    @if($result->type == 'history')
+                                        <span class="text-xs text-muted mb-1"><i class="fas fa-history me-1"></i>Reset:</span>
+                                    @endif
+                                    <span class="text-secondary text-xs font-weight-bold">
+                                        <i class="far fa-calendar me-1"></i>{{ $result->sort_date->format('d/m/y') }}
+                                    </span>
+                                    <span class="text-secondary text-xs">
+                                        <i class="far fa-clock me-1"></i>{{ $result->sort_date->format('H:i') }}
+                                    </span>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4">Belum ada hasil evaluasi.</td>
+                            <td colspan="10" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <div class="bg-light rounded-circle p-4 mb-3">
+                                        <i class="fas fa-clipboard-list fa-3x text-muted opacity-50"></i>
+                                    </div>
+                                    <h6 class="text-muted fw-bold">Belum ada data evaluasi</h6>
+                                    <p class="text-muted small mb-0">Hasil evaluasi Anda akan muncul di sini.</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="p-3">
+        <div class="px-4 py-3 border-top">
             {{ $results->links() }}
         </div>
     </div>
 </div>
-@endsection
 
+<style>
+    .text-xxs { font-size: 0.7rem; }
+    .text-xs { font-size: 0.8rem; }
+    .opacity-7 { opacity: 0.7; }
+</style>
+@endsection

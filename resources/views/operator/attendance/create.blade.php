@@ -56,46 +56,27 @@
                         </div>
 
                         <!-- Status Badge -->
-                         @if($user->today_attendance)
+                        @if($user->today_attendance && $user->today_attendance->status != 'alpha')
                             <div class="text-center mb-3">
-                                @if($user->today_attendance->status == 'alpha')
-                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">
-                                        <i class="fas fa-times me-1"></i> Tidak Hadir
-                                    </span>
-                                @else
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
-                                        <i class="fas fa-check me-1"></i> Hadir: {{ \Carbon\Carbon::parse($user->today_attendance->time_in)->format('H:i') }} WIB
-                                    </span>
-                                @endif
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                    <i class="fas fa-check me-1"></i> Hadir: {{ \Carbon\Carbon::parse($user->today_attendance->time_in)->format('H:i') }} WIB
+                                </span>
                             </div>
                         @endif
 
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2">
                             @if(!$user->today_attendance)
-                                <div class="row g-2">
-                                    <div class="col-8">
-                                         <form action="{{ route('operator.attendance.store') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="nik" value="{{ $user->nik }}">
-                                            <input type="hidden" name="division" value="{{ $division }}">
-                                            <input type="hidden" name="action" value="present">
-                                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
-                                                <i class="fas fa-fingerprint me-1"></i> HADIR
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="col-4">
-                                         <form action="{{ route('operator.attendance.store') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="nik" value="{{ $user->nik }}">
-                                            <input type="hidden" name="division" value="{{ $division }}">
-                                            <input type="hidden" name="action" value="absent">
-                                            <button type="submit" class="btn btn-outline-danger w-100 py-2 fw-bold shadow-sm">
-                                                ABSEN
-                                            </button>
-                                        </form>
-                                    </div>
+                                <div class="w-100">
+                                     <form action="{{ route('operator.attendance.store') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="nik" value="{{ $user->nik }}">
+                                        <input type="hidden" name="division" value="{{ $division }}">
+                                        <input type="hidden" name="action" value="present">
+                                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
+                                            <i class="fas fa-fingerprint me-1"></i> HADIR
+                                        </button>
+                                    </form>
                                 </div>
                             @else
                                 <button class="btn btn-secondary w-100 py-2" disabled>

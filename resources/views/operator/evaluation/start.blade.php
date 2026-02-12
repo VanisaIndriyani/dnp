@@ -93,8 +93,8 @@
         <div id="start-screen" class="card text-center border-0 shadow-sm" style="border-radius: 15px;">
             <div class="card-body py-5">
                 <div class="mb-4">
-                    <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                        <i class="fas fa-file-alt fa-3x"></i>
+                    <div class="bg-white text-danger rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm border border-danger border-opacity-25 p-4" style="width: 100px; height: 100px;">
+                        <i class="fas fa-laptop-code fa-4x"></i>
                     </div>
                 </div>
                 <h2 class="mb-3 fw-bold text-dark">Evaluasi Operator</h2>
@@ -104,13 +104,25 @@
                     Silakan baca peraturan di bawah ini dengan seksama sebelum memulai.
                 </p>
                 
-                <div class="alert alert-warning text-start d-inline-block p-4" style="border-left: 5px solid #ffc107; border-radius: 4px;">
-                    <h5 class="alert-heading fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Peraturan Penting:</h5>
-                    <ul class="mb-0 ps-3">
-                        <li class="mb-2">Dilarang membuka tab lain atau aplikasi lain.</li>
-                        <li class="mb-2">Dilarang keluar dari mode layar penuh (fullscreen).</li>
-                        <li class="mb-2">Sistem akan memberikan peringatan jika terjadi pelanggaran.</li>
-                        <li>Jika peringatan mencapai <strong>3 kali</strong>, jawaban akan <strong>dikumpulkan otomatis</strong>.</li>
+                <div class="card bg-warning bg-opacity-10 border-warning border-start border-4 text-start d-inline-block p-4 shadow-sm">
+                    <h5 class="fw-bold text-warning mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Peraturan Penting:</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2 d-flex align-items-start">
+                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
+                            <span>Dilarang membuka tab lain atau aplikasi lain.</span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-start">
+                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
+                            <span>Dilarang keluar dari mode layar penuh (fullscreen).</span>
+                        </li>
+                        <li class="mb-2 d-flex align-items-start">
+                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
+                            <span>Sistem akan memberikan peringatan jika terjadi pelanggaran.</span>
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="fas fa-times-circle text-danger mt-1 me-2"></i>
+                            <span>Jika peringatan mencapai <strong>2 kali</strong>, jawaban akan <strong>dikumpulkan otomatis</strong>.</span>
+                        </li>
                     </ul>
                 </div>
 
@@ -128,7 +140,7 @@
                 <h5 class="mb-0 fw-bold"><i class="fas fa-pen-alt me-2"></i>Soal Evaluasi</h5>
                 <div>
                     <span class="badge bg-danger text-white py-2 px-3 rounded-pill shadow-sm">
-                        <i class="fas fa-exclamation-circle me-1"></i> Peringatan: <span id="warning-count">0</span>/3
+                        <i class="fas fa-exclamation-circle me-1"></i> Peringatan: <span id="warning-count">0</span>/2
                     </span>
                 </div>
             </div>
@@ -207,7 +219,7 @@
         const warningCountSpan = document.getElementById('warning-count');
         
         let warningCount = 0;
-        const maxWarnings = 3;
+        const maxWarnings = 2;
         let isExamActive = false;
 
         // Make selectOption available globally
@@ -369,7 +381,17 @@
             warningCount++;
             warningCountSpan.innerText = warningCount;
             
-            alert(`PERINGATAN ${warningCount}/${maxWarnings}\n\n${message}\n\nJangan ulangi atau ujian akan dikumpulkan otomatis!`);
+            // alert(`PERINGATAN ${warningCount}/${maxWarnings}\n\n${message}\n\nJangan ulangi atau ujian akan dikumpulkan otomatis!`);
+            Swal.fire({
+                icon: 'warning',
+                title: `PERINGATAN ${warningCount}/${maxWarnings}`,
+                text: message,
+                footer: 'Jangan ulangi atau ujian akan dikumpulkan otomatis!',
+                confirmButtonText: 'Saya Mengerti',
+                confirmButtonColor: '#d33',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
 
             // Re-enter fullscreen if exited
             if (!document.fullscreenElement) {
@@ -384,8 +406,16 @@
         // Auto Submit
         function autoSubmit() {
             isExamActive = false;
-            alert("Batas peringatan terlampaui. Ujian Anda akan dikumpulkan otomatis.");
-            examForm.submit();
+            Swal.fire({
+                icon: 'error',
+                title: 'Batas Peringatan Terlampaui',
+                text: 'Ujian Anda akan dikumpulkan otomatis.',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#d33',
+                allowOutsideClick: false
+            }).then(() => {
+                examForm.submit();
+            });
         }
 
         // Disable Context Menu (Right Click)

@@ -16,7 +16,8 @@ class PublicAttendanceController extends Controller
         $users = [];
 
         if ($division && in_array($division, ['case', 'cover', 'inner', 'endplate'])) {
-            $query = User::where('division', $division);
+            $query = User::where('division', $division)
+                         ->whereNotIn('role', ['super_admin', 'admin']);
 
             if ($search) {
                 $query->where(function($q) use ($search) {

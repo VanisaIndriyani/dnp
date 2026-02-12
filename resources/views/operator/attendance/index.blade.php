@@ -15,20 +15,17 @@
 <div class="card mb-4">
     <div class="card-body">
         <form action="{{ route('operator.attendance.index') }}" method="GET" class="row g-3">
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <label for="date" class="form-label">Tanggal</label>
-                <input type="date" class="form-control" id="date" name="date" value="{{ request('date') }}">
+                <input type="date" class="form-control" id="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()">
             </div>
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <label for="status" class="form-label">Status</label>
-                <select class="form-select" id="status" name="status">
+                <select class="form-select" id="status" name="status" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="present" {{ request('status') == 'present' ? 'selected' : '' }}>Hadir</option>
                     <option value="alpha" {{ request('status') == 'alpha' ? 'selected' : '' }}>Tidak Hadir</option>
                 </select>
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-danger w-100" style="background-color: var(--primary-color);">Filter</button>
             </div>
         </form>
     </div>

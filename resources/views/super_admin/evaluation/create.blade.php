@@ -88,15 +88,17 @@
                     </div>
                     <div class="card-body">
                         <input type="hidden" name="questions[${index}][type]" value="${questionType}">
+                        <input type="hidden" name="questions[${index}][category]" value="${defaultCategory}">
                         
                         <div class="mb-3">
-                            <label class="form-label">Kategori / Bagian</label>
-                            <select class="form-select" name="questions[${index}][category]" required>
-                                <option value="">Pilih Bagian</option>
-                                <option value="cover" ${defaultCategory === 'cover' ? 'selected' : ''}>Cover</option>
-                                <option value="case" ${defaultCategory === 'case' ? 'selected' : ''}>Case</option>
-                                <option value="inner" ${defaultCategory === 'inner' ? 'selected' : ''}>Inner</option>
-                                <option value="endplate" ${defaultCategory === 'endplate' ? 'selected' : ''}>Endplate</option>
+                            <label class="form-label">Kategori Soal</label>
+                            <select class="form-select" name="questions[${index}][sub_category]" required>
+                                <option value="" selected disabled>Pilih Kategori</option>
+                                <option value="General">General</option>
+                                <option value="Safety">Safety</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Quality">Quality</option>
+                                <option value="SOP">SOP</option>
                             </select>
                         </div>
 

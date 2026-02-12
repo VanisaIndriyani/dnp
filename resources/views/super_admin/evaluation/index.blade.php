@@ -77,9 +77,6 @@
                 <h2 class="mb-0">Soal Evaluasi: <span class="text-primary">{{ ucfirst($category) }}</span></h2>
             </div>
             <div>
-                <a href="{{ route('super_admin.evaluation.results') }}" class="btn btn-info text-white me-2">
-                    <i class="fas fa-poll me-2"></i>Lihat Hasil Nilai
-                </a>
                 @can('super_admin')
                 
                 <form id="deleteAllForm" action="{{ route('super_admin.evaluation.destroyAll') }}" method="POST" class="d-inline">
@@ -118,15 +115,19 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             
+            @php
+                $activeTab = request('tab') == 'essay' ? 'essay' : 'mc';
+            @endphp
+
             <!-- Tabs -->
             <ul class="nav nav-tabs mb-3" id="evaluationTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="mc-tab" data-bs-toggle="tab" data-bs-target="#mc" type="button" role="tab" aria-controls="mc" aria-selected="true">
+                    <button class="nav-link {{ $activeTab == 'mc' ? 'active' : '' }}" id="mc-tab" data-bs-toggle="tab" data-bs-target="#mc" type="button" role="tab" aria-controls="mc" aria-selected="{{ $activeTab == 'mc' ? 'true' : 'false' }}">
                         <i class="fas fa-list-ul me-2"></i>Pilihan Ganda
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="essay-tab" data-bs-toggle="tab" data-bs-target="#essay" type="button" role="tab" aria-controls="essay" aria-selected="false">
+                    <button class="nav-link {{ $activeTab == 'essay' ? 'active' : '' }}" id="essay-tab" data-bs-toggle="tab" data-bs-target="#essay" type="button" role="tab" aria-controls="essay" aria-selected="{{ $activeTab == 'essay' ? 'true' : 'false' }}">
                         <i class="fas fa-align-left me-2"></i>Essay
                     </button>
                 </li>
@@ -134,14 +135,15 @@
 
             <div class="tab-content" id="evaluationTabsContent">
                 <!-- Multiple Choice Tab -->
-                <div class="tab-pane fade show active" id="mc" role="tabpanel" aria-labelledby="mc-tab">
+                <div class="tab-pane fade {{ $activeTab == 'mc' ? 'show active' : '' }}" id="mc" role="tabpanel" aria-labelledby="mc-tab">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light">
                                 <tr>
                                     <th class="ps-4" style="width: 5%;">#</th>
+                                    <th style="width: 15%;">Kategori</th>
                                     {{-- Removed 'Bagian' column since we are in a specific category view --}}
-                                    <th style="width: 45%;">Pertanyaan</th>
+                                    <th style="width: 30%;">Pertanyaan</th>
                                     <th style="width: 10%;">Kunci</th>
                                     <th style="width: 25%;">Opsi Jawaban</th>
                                     <th class="text-end pe-4" style="width: 15%;">Aksi</th>
@@ -151,6 +153,7 @@
                                 @forelse($mcQuestions as $key => $evaluation)
                                     <tr>
                                         <td class="ps-4">{{ $mcQuestions->firstItem() + $key }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ $evaluation->sub_category ?? '-' }}</span></td>
                                         <td>{{ Str::limit($evaluation->question, 100) }}</td>
                                         <td><span class="badge bg-success">{{ strtoupper($evaluation->correct_answer) }}</span></td>
                                         <td>
@@ -187,18 +190,19 @@
                         </table>
                     </div>
                     <div class="p-3">
-                        {{ $mcQuestions->appends(['essay_page' => $essayQuestions->currentPage(), 'category' => request('category')])->links() }}
+                        {{ $mcQuestions->appends(['essay_page' => $essayQuestions->currentPage(), 'category' => request('category'), 'tab' => 'mc'])->links() }}
                     </div>
                 </div>
 
                 <!-- Essay Tab -->
-                <div class="tab-pane fade" id="essay" role="tabpanel" aria-labelledby="essay-tab">
+                <div class="tab-pane fade {{ $activeTab == 'essay' ? 'show active' : '' }}" id="essay" role="tabpanel" aria-labelledby="essay-tab">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light">
                                 <tr>
                                     <th class="ps-4" style="width: 5%;">#</th>
-                                    <th style="width: 70%;">Pertanyaan</th>
+                                    <th style="width: 15%;">Kategori</th>
+                                    <th style="width: 55%;">Pertanyaan</th>
                                     <th class="text-end pe-4" style="width: 25%;">Aksi</th>
                                 </tr>
                             </thead>
@@ -206,6 +210,7 @@
                                 @forelse($essayQuestions as $key => $evaluation)
                                     <tr>
                                         <td class="ps-4">{{ $essayQuestions->firstItem() + $key }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ $evaluation->sub_category ?? '-' }}</span></td>
                                         <td>{{ Str::limit($evaluation->question, 150) }}</td>
                                         <td class="text-end pe-4">
                                             @can('super_admin')
@@ -233,7 +238,7 @@
                         </table>
                     </div>
                     <div class="p-3">
-                        {{ $essayQuestions->appends(['mc_page' => $mcQuestions->currentPage(), 'category' => request('category')])->links() }}
+                        {{ $essayQuestions->appends(['mc_page' => $mcQuestions->currentPage(), 'category' => request('category'), 'tab' => 'essay'])->links() }}
                     </div>
                 </div>
             </div>
@@ -252,6 +257,17 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="sub_category" class="form-label">Kategori Soal</label>
+                            <select class="form-select" id="sub_category" name="sub_category" required>
+                                <option value="" selected disabled>Pilih Kategori</option>
+                                <option value="General">General</option>
+                                <option value="Safety">Safety</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Quality">Quality</option>
+                                <option value="SOP">SOP</option>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
                             <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">

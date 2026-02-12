@@ -172,15 +172,6 @@
                                             <i class="fas fa-check me-1"></i> Hadir
                                         </button>
                                     </form>
-                                    <form action="{{ route('quick-attendance.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="nik" value="{{ $user->nik }}">
-                                        <input type="hidden" name="division" value="{{ request('division') }}">
-                                        <input type="hidden" name="action" value="absent">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                            <i class="fas fa-times me-1"></i> Absen
-                                        </button>
-                                    </form>
                                 @else
                                     <button class="btn btn-secondary btn-sm w-100" disabled>
                                         <i class="fas fa-check-double"></i> Selesai

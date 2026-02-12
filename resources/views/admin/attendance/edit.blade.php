@@ -23,33 +23,15 @@
                 <input type="text" class="form-control" value="{{ $attendance->user->name }} ({{ $attendance->user->nik }})" disabled readonly>
             </div>
 
-            <div class="row">
-                <!-- Date -->
-                <div class="col-md-6 mb-4">
-                    <label for="date" class="form-label fw-bold">Tanggal</label>
-                    <input type="date" class="form-control" id="date" name="date" value="{{ $attendance->date }}" required>
-                </div>
+            <input type="hidden" name="date" value="{{ $attendance->date }}">
+            <input type="hidden" name="time_in" value="{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '' }}">
 
-                <!-- Status -->
-                <div class="col-md-6 mb-4">
-                    <label for="status" class="form-label fw-bold">Status Kehadiran</label>
-                    <select class="form-select" id="status" name="status" required>
-                        <option value="present" {{ $attendance->status == 'present' || $attendance->status == 'late' ? 'selected' : '' }}>Hadir (Present)</option>
-                        <option value="sick" {{ $attendance->status == 'sick' ? 'selected' : '' }}>Sakit (Sick)</option>
-                        <option value="permission" {{ $attendance->status == 'permission' ? 'selected' : '' }}>Izin (Permission)</option>
-                        <option value="alpha" {{ $attendance->status == 'alpha' ? 'selected' : '' }}>Alpha (Absent)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Time In -->
-                <div class="col-md-12 mb-4">
-                    <label for="time_in" class="form-label fw-bold">Jam Masuk</label>
-                    <input type="time" class="form-control" id="time_in" name="time_in" 
-                        value="{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '' }}">
-                    <div class="form-text">Kosongkan jika tidak hadir.</div>
-                </div>
+            <div class="mb-4">
+                <label for="status" class="form-label fw-bold">Status Kehadiran</label>
+                <select class="form-select" id="status" name="status" required>
+                    <option value="present" {{ ($attendance->status == 'present' || $attendance->status == 'late') ? 'selected' : '' }}>Hadir</option>
+                    <option value="alpha" {{ ($attendance->status != 'present' && $attendance->status != 'late') ? 'selected' : '' }}>Tidak Hadir</option>
+                </select>
             </div>
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">

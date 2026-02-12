@@ -3,62 +3,51 @@
 @section('title', 'Data Absensi')
 
 @section('content')
-<!-- Header -->
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-    <div>
+<!-- Header & Filters -->
+<div class="row mb-4 align-items-center">
+    <div class="col-12 col-xl-auto mb-3 mb-xl-0">
         <h2 class="mb-1 fw-bold text-dark">Data Absensi</h2>
         <p class="text-muted mb-0">Pantau kehadiran dan aktivitas harian operator.</p>
     </div>
-    <div class="mt-3 mt-md-0">
-        <a href="{{ route('admin.attendance.createManual') }}" class="btn btn-danger shadow-sm me-2" style="background-color: var(--primary-color);">
-            <i class="fas fa-plus me-2"></i>Input Absensi Manual
-        </a>
-        <a href="{{ route('admin.attendance.export', request()->query()) }}" class="btn btn-success shadow-sm">
-            <i class="fas fa-file-excel me-2"></i>Export Excel
-        </a>
-    </div>
-</div>
+    <div class="col-12 col-xl-auto ms-auto">
+        <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-xl-end align-items-center">
+            {{-- Action Buttons --}}
+            <a href="{{ route('admin.attendance.createManual') }}" class="btn btn-danger btn-sm shadow-sm" style="background-color: var(--primary-color);">
+                <i class="fas fa-plus me-1"></i> Input Manual
+            </a>
+            <a href="{{ route('admin.attendance.export', request()->query()) }}" class="btn btn-success btn-sm shadow-sm">
+                <i class="fas fa-file-excel me-1"></i> Export
+            </a>
 
-<!-- Filter Section -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-        <form action="{{ route('admin.attendance.index') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label for="date" class="form-label fw-bold text-secondary small text-uppercase">Tanggal</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-calendar"></i></span>
-                    <input type="date" class="form-control border-start-0 ps-0" id="date" name="date" value="{{ request('date') }}">
+            <div class="vr mx-1 d-none d-xl-block bg-secondary opacity-25"></div>
+
+            {{-- Filters --}}
+            <form action="{{ route('admin.attendance.index') }}" method="GET" class="d-flex flex-wrap gap-2 align-items-center">
+                <select name="division" class="form-select form-select-sm bg-white border-secondary border-opacity-25 rounded-3 shadow-sm" style="width: auto; cursor: pointer;" onchange="this.form.submit()">
+                    <option value="">Semua Bagian</option>
+                    <option value="case" {{ request('division') == 'case' ? 'selected' : '' }}>Case</option>
+                    <option value="cover" {{ request('division') == 'cover' ? 'selected' : '' }}>Cover</option>
+                    <option value="inner" {{ request('division') == 'inner' ? 'selected' : '' }}>Inner</option>
+                    <option value="endplate" {{ request('division') == 'endplate' ? 'selected' : '' }}>Endplate</option>
+                </select>
+
+                <select name="status" class="form-select form-select-sm bg-white border-secondary border-opacity-25 rounded-3 shadow-sm" style="width: auto; cursor: pointer;" onchange="this.form.submit()">
+                    <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
+                    <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
+                </select>
+
+                <div class="d-flex align-items-center bg-white rounded-3 border border-secondary border-opacity-25 shadow-sm px-2 py-1">
+                    <i class="fas fa-calendar text-muted small me-2"></i>
+                    <input type="date" name="date" class="form-control form-control-sm border-0 bg-transparent p-0 text-secondary fw-bold" style="width: 110px; font-size: 0.8rem;" value="{{ request('date') }}" onchange="this.form.submit()">
                 </div>
-            </div>
-            <div class="col-md-3">
-                <label for="division" class="form-label fw-bold text-secondary small text-uppercase">Bagian</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-layer-group"></i></span>
-                    <select class="form-select border-start-0 ps-0" id="division" name="division">
-                        <option value="">Semua Bagian</option>
-                        <option value="case" {{ request('division') == 'case' ? 'selected' : '' }}>Case</option>
-                        <option value="cover" {{ request('division') == 'cover' ? 'selected' : '' }}>Cover</option>
-                        <option value="inner" {{ request('division') == 'inner' ? 'selected' : '' }}>Inner</option>
-                        <option value="endplate" {{ request('division') == 'endplate' ? 'selected' : '' }}>Endplate</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label for="status" class="form-label fw-bold text-secondary small text-uppercase">Status</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-filter"></i></span>
-                    <select class="form-select border-start-0 ps-0" id="status" name="status">
-                        <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
-                        <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir (Belum Absen)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-danger w-100 fw-bold shadow-sm" style="background-color: var(--primary-color);">
-                    <i class="fas fa-filter me-2"></i>Terapkan Filter
-                </button>
-            </div>
-        </form>
+
+                @if(request()->anyFilled(['division', 'date']) || (request('status') && request('status') != 'hadir'))
+                    <a href="{{ route('admin.attendance.index') }}" class="btn btn-light btn-sm rounded-circle border shadow-sm d-flex align-items-center justify-content-center text-danger" style="width: 32px; height: 32px;" title="Reset Filter">
+                        <i class="fas fa-times fa-xs"></i>
+                    </a>
+                @endif
+            </form>
+        </div>
     </div>
 </div>
 

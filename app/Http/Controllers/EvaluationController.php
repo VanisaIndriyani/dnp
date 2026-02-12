@@ -10,8 +10,26 @@ use App\Exports\EvaluationExport;
 use App\Imports\EvaluationImport;
 use Maatwebsite\Excel\Facades\Excel;
 
+use App\Models\Setting; // Import Setting Model
+use Illuminate\Support\Str;
+
 class EvaluationController extends Controller
 {
+    public function updatePassingGrade(Request $request)
+    {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403);
+        }
+
+        $request->validate([
+            'passing_grade' => 'required|numeric|min:0|max:100',
+        ]);
+
+        Setting::setValue('evaluation_passing_grade', $request->passing_grade);
+
+        return redirect()->back()->with('success', 'Nilai minimal kelulusan (KKM) berhasil diperbarui.');
+    }
+
     public function start()
     {
         // Check if user already took the test
@@ -169,6 +187,7 @@ class EvaluationController extends Controller
             'questions' => 'required|array',
             'questions.*.type' => 'required|in:multiple_choice,essay',
             'questions.*.category' => 'required|string',
+            'questions.*.sub_category' => 'required|string',
             'questions.*.question' => 'required|string',
             // Options and correct_answer required only if type is multiple_choice
             'questions.*.option_a' => 'required_if:questions.*.type,multiple_choice',
@@ -182,6 +201,7 @@ class EvaluationController extends Controller
             Evaluation::create([
                 'type' => $q['type'],
                 'category' => $q['category'],
+                'sub_category' => $q['sub_category'],
                 'question' => $q['question'],
                 'option_a' => $q['type'] == 'multiple_choice' ? $q['option_a'] : null,
                 'option_b' => $q['type'] == 'multiple_choice' ? $q['option_b'] : null,
@@ -212,6 +232,7 @@ class EvaluationController extends Controller
         $request->validate([
             'type' => 'required|in:multiple_choice,essay',
             'category' => 'required|string',
+            'sub_category' => 'required|string',
             'question' => 'required|string',
             'option_a' => 'required_if:type,multiple_choice',
             'option_b' => 'required_if:type,multiple_choice',
@@ -223,6 +244,7 @@ class EvaluationController extends Controller
         $evaluation->update([
             'type' => $request->type,
             'category' => $request->category,
+            'sub_category' => $request->sub_category,
             'question' => $request->question,
             'option_a' => $request->type == 'multiple_choice' ? $request->option_a : null,
             'option_b' => $request->type == 'multiple_choice' ? $request->option_b : null,
@@ -231,7 +253,10 @@ class EvaluationController extends Controller
             'correct_answer' => $request->type == 'multiple_choice' ? $request->correct_answer : null,
         ]);
 
-        return redirect()->route(auth()->user()->role . '.evaluation.index', ['category' => $evaluation->category])->with('success', 'Soal evaluasi berhasil diperbarui.');
+        return redirect()->route(auth()->user()->role . '.evaluation.index', [
+            'category' => $evaluation->category,
+            'tab' => $request->type == 'essay' ? 'essay' : 'mc'
+        ])->with('success', 'Soal evaluasi berhasil diperbarui.');
     }
 
     public function destroy(Evaluation $evaluation)
@@ -259,11 +284,12 @@ class EvaluationController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
+            'file' => 'required|mimes:xlsx,xls,csv',
+            'sub_category' => 'nullable|string'
         ]);
 
         try {
-            Excel::import(new EvaluationImport($request->category), $request->file('file'));
+            Excel::import(new EvaluationImport($request->category, $request->sub_category), $request->file('file'));
             return redirect()->back()->with('success', 'Soal evaluasi berhasil diimport.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal import data: ' . $e->getMessage());
@@ -288,98 +314,367 @@ class EvaluationController extends Controller
     public function destroyResult($id)
     {
         $result = EvaluationResult::findOrFail($id);
-        // Delete associated answers? 
-        // answers are hasMany in Evaluation, but here we are deleting the Result.
-        // Wait, EvaluationAnswer has user_id and evaluation_id, but not linked to EvaluationResult directly (my mistake in design?)
-        // Actually, EvaluationAnswer is linked to User and Evaluation.
-        // If we reset the result, we should also delete the user's answers for those questions so they can retake it.
         
+        // Archive to History
+        \App\Models\EvaluationHistory::create([
+            'user_id' => $result->user_id,
+            'score' => $result->score,
+            'mc_score' => $result->mc_score,
+            'essay_score' => $result->essay_score,
+            'completed_at' => $result->created_at,
+            'archived_at' => now(),
+        ]);
+        
+        // Delete associated answers for this user
         EvaluationAnswer::where('user_id', $result->user_id)->delete();
         
         $result->delete();
-        return redirect()->back()->with('success', 'Hasil evaluasi berhasil direset (dihapus). User dapat mengerjakan ulang.');
+        return redirect()->back()->with('success', 'Hasil evaluasi berhasil direset dan diarsipkan. User dapat mengerjakan ulang.');
     }
 
     public function results(Request $request)
     {
+        $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
+
         if (auth()->user()->role == 'super_admin') {
-            // If division is selected, show results for that division
-            if ($request->has('division') && $request->division != '') {
-                $division = $request->division;
-                $query = EvaluationResult::with('user')
-                    ->whereHas('user', function ($q) use ($division) {
-                        $q->where('division', $division);
-                    });
+            // Get Sub Categories for Filter
+            $defaultCategories = ['General', 'Safety', 'Technical', 'Quality', 'SOP'];
+            $existingCategories = Evaluation::withTrashed()->distinct()->pluck('sub_category')->filter()->toArray();
+            $subCategories = array_values(array_unique(array_merge($defaultCategories, $existingCategories)));
 
-                // Date Filtering
-                if ($request->filled('start_date')) {
-                    $query->whereDate('created_at', '>=', $request->start_date);
-                }
-                if ($request->filled('end_date')) {
-                    $query->whereDate('created_at', '<=', $request->end_date);
-                }
-
-                $results = $query->latest()->paginate(10);
-                
-                return view('super_admin.evaluation.results', compact('results', 'division'));
-            }
-
-            // Default: Show Category Dashboard for Results
-            $divisions = ['cover', 'case', 'inner', 'endplate'];
+            // 1. Calculate Stats (Always)
+            $allDivisions = ['cover', 'case', 'inner', 'endplate'];
             $stats = [];
-            foreach ($divisions as $div) {
-                $query = EvaluationResult::whereHas('user', function ($q) use ($div) {
+            foreach ($allDivisions as $div) {
+                $statQuery = EvaluationResult::whereHas('user', function ($q) use ($div) {
                     $q->where('division', $div);
                 });
                 
                 $stats[$div] = [
-                    'total' => (clone $query)->count(),
-                    'pending' => (clone $query)->where('status', 'pending')->count(),
-                    'graded' => (clone $query)->where('status', 'graded')->count(),
+                    'total' => (clone $statQuery)->count(),
+                    'pending' => (clone $statQuery)->where('status', 'pending')->count(),
+                    'graded' => (clone $statQuery)->where('status', 'graded')->count(),
                 ];
             }
 
-            return view('super_admin.evaluation.results', compact('stats'));
+            // 2. Prepare Results Query (Always)
+            // If view_all is requested, ignore division filter
+            $division = $request->has('view_all') ? null : $request->division;
+            
+            // --- Active Results Query ---
+            $query = EvaluationResult::with('user');
+            
+            if ($division) {
+                $query->whereHas('user', function ($q) use ($division) {
+                    $q->where('division', $division);
+                });
+            }
+
+            // Date Filtering
+            if ($request->filled('start_date')) {
+                $query->whereDate('created_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+            }
+
+            // NIK Filtering
+            if ($request->filled('nik')) {
+                $query->whereHas('user', function ($q) use ($request) {
+                    $q->where('nik', 'like', '%' . $request->nik . '%');
+                });
+            }
+            
+            // Status Kelulusan Filtering
+            if ($request->filled('status_kelulusan')) {
+                if ($request->status_kelulusan == 'lulus') {
+                    $query->where('score', '>=', $passingGrade);
+                } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                    $query->where('score', '<', $passingGrade);
+                }
+            }
+
+            // Sub Category Filtering
+            if ($request->filled('sub_category')) {
+                $query->whereHas('answers.evaluation', function ($q) use ($request) {
+                    $q->where('sub_category', $request->sub_category);
+                });
+            }
+
+            $results = $query->latest()->paginate(10);
+            
+            // --- History Results Query ---
+            $historiesQuery = \App\Models\EvaluationHistory::with('user');
+            
+            if ($division) {
+                $historiesQuery->whereHas('user', function ($q) use ($division) {
+                    $q->where('division', $division);
+                });
+            }
+            
+            if ($request->filled('start_date')) {
+                $historiesQuery->whereDate('completed_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $historiesQuery->whereDate('completed_at', '<=', $request->end_date);
+            }
+
+            if ($request->filled('nik')) {
+                $historiesQuery->whereHas('user', function ($q) use ($request) {
+                    $q->where('nik', 'like', '%' . $request->nik . '%');
+                });
+            }
+            
+            if ($request->filled('status_kelulusan')) {
+                if ($request->status_kelulusan == 'lulus') {
+                    $historiesQuery->where('score', '>=', $passingGrade);
+                } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                    $historiesQuery->where('score', '<', $passingGrade);
+                }
+            }
+            
+            // Sub Category Filtering (History doesn't support this, so return empty)
+            if ($request->filled('sub_category')) {
+                $historiesQuery->whereRaw('1 = 0');
+            }
+
+            $histories = $historiesQuery->latest('archived_at')->get();
+
+            return view('super_admin.evaluation.results', compact('results', 'division', 'histories', 'passingGrade', 'stats', 'subCategories'));
         }
 
         $query = EvaluationResult::with('user');
 
         if (auth()->user()->role == 'operator') {
-            $query->where('user_id', auth()->id());
+            // 1. Get Sub Categories for Filter
+            $defaultCategories = ['General', 'Safety', 'Technical', 'Quality', 'SOP'];
+            $existingCategories = Evaluation::withTrashed()->distinct()->pluck('sub_category')->filter()->toArray();
+            $subCategories = array_values(array_unique(array_merge($defaultCategories, $existingCategories)));
+
+            // 2. Active Results Query
+            $activeQuery = EvaluationResult::with(['user', 'answers.evaluation'])
+                ->where('user_id', auth()->id());
+
+            // Filters for Active
+            if ($request->filled('status_kelulusan')) {
+                if ($request->status_kelulusan == 'lulus') {
+                    $activeQuery->where('score', '>=', $passingGrade);
+                } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                    $activeQuery->where('score', '<', $passingGrade);
+                }
+            }
+            if ($request->filled('start_date')) {
+                $activeQuery->whereDate('created_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $activeQuery->whereDate('created_at', '<=', $request->end_date);
+            }
+            if ($request->filled('sub_category')) {
+                $activeQuery->whereHas('answers.evaluation', function ($q) use ($request) {
+                    $q->where('sub_category', $request->sub_category);
+                });
+            }
+
+            $activeResults = $activeQuery->get()->map(function($item) {
+                $item->type = 'active';
+                $item->sort_date = $item->created_at;
+                // Try to get category from answers
+                $firstAnswer = $item->answers->first();
+                $item->category_name = $firstAnswer && $firstAnswer->evaluation ? $firstAnswer->evaluation->sub_category : '-';
+                return $item;
+            });
+
+            // 3. History Results Query
+            $historyQuery = \App\Models\EvaluationHistory::with('user')->where('user_id', auth()->id());
+
+            // Filters for History
+            if ($request->filled('status_kelulusan')) {
+                if ($request->status_kelulusan == 'lulus') {
+                    $historyQuery->where('score', '>=', $passingGrade);
+                } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                    $historyQuery->where('score', '<', $passingGrade);
+                }
+            }
+            if ($request->filled('start_date')) {
+                $historyQuery->whereDate('archived_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $historyQuery->whereDate('archived_at', '<=', $request->end_date);
+            }
+            // Note: History does not support category filter as it's not stored in history table
+
+            $historyResults = $historyQuery->get()->map(function($item) {
+                $item->type = 'history';
+                $item->status = 'archived';
+                $item->sort_date = $item->archived_at;
+                $item->category_name = '-';
+                return $item;
+            });
+
+            // 4. Merge and Sort
+            // If category filter is active, history results (which are '-') might need to be filtered out?
+            // The user didn't specify, but usually if I filter by "Safety", I expect only Safety.
+            // Since history doesn't have category, should I include them or exclude them?
+            // If I exclude them, the user can't see history when filtering.
+            // But if I include them, the filter is "loose".
+            // Let's exclude history if category filter is present, consistent with "filter".
+            if ($request->filled('sub_category')) {
+                $historyResults = collect([]);
+            }
+
+            $merged = $activeResults->concat($historyResults)->sortByDesc('sort_date')->values();
+
+            // 5. Paginate
+            $page = $request->get('page', 1);
+            $perPage = 10;
+            $results = new \Illuminate\Pagination\LengthAwarePaginator(
+                $merged->forPage($page, $perPage),
+                $merged->count(),
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+
+            return view('operator.evaluation.results', compact('results', 'passingGrade', 'subCategories'));
         }
 
         $results = $query->latest()->paginate(10);
-
-        if (auth()->user()->role == 'operator') {
-            return view('operator.evaluation.results', compact('results'));
-        }
-
-        return view('admin.evaluation.results', compact('results'));
     }
 
     public function exportResults(Request $request)
     {
-        $query = EvaluationResult::with('user');
+        $exportType = $request->input('export_type', 'all'); // 'all', 'active', 'history'
+        $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
 
-        if (auth()->user()->role == 'operator') {
-            $query->where('user_id', auth()->id());
+        $activeResults = collect();
+        $historyResults = collect();
+
+        // 1. Fetch Active Results
+        if ($exportType == 'all' || $exportType == 'active') {
+            $query = EvaluationResult::with('user');
+
+            if (auth()->user()->role == 'operator') {
+                $query->where('user_id', auth()->id());
+            }
+
+            if (auth()->user()->role == 'super_admin') {
+                // If view_all is requested, ignore division filter
+                if (!$request->has('view_all') && $request->has('division') && $request->division != '') {
+                    $query->whereHas('user', function ($q) use ($request) {
+                        $q->where('division', $request->division);
+                    });
+                }
+            }
+
+            // Date Filtering
+            if ($request->filled('start_date')) {
+                $query->whereDate('created_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $query->whereDate('created_at', '<=', $request->end_date);
+            }
+
+            if ($request->filled('nik')) {
+                $query->whereHas('user', function ($q) use ($request) {
+                    $q->where('nik', 'like', '%' . $request->nik . '%');
+                });
+            }
+
+            // Status Kelulusan Filtering
+            if ($request->filled('status_kelulusan')) {
+                if ($request->status_kelulusan == 'lulus') {
+                    $query->where('score', '>=', $passingGrade);
+                } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                    $query->where('score', '<', $passingGrade);
+                }
+            }
+
+            // Sub Category Filtering
+            if ($request->filled('sub_category')) {
+                $query->whereHas('answers.evaluation', function ($q) use ($request) {
+                    $q->where('sub_category', $request->sub_category);
+                });
+            }
+
+            $activeResults = $query->latest()->get();
         }
-
-        if (auth()->user()->role == 'super_admin' && $request->has('division') && $request->division != '') {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('division', $request->division);
-            });
-        }
-
-        $results = $query->latest()->get();
         
-        $fileName = 'Laporan_Hasil_Evaluasi';
-        if ($request->has('division') && $request->division != '') {
-            $fileName .= '_' . ucfirst($request->division);
+        // 2. Fetch Histories
+        if ($exportType == 'all' || $exportType == 'history') {
+            $historyQuery = \App\Models\EvaluationHistory::with('user');
+            
+            if (auth()->user()->role == 'operator') {
+                 $historyQuery->where('user_id', auth()->id());
+            }
+            
+            if (auth()->user()->role == 'super_admin') {
+                // If view_all is requested, ignore division filter
+                if (!$request->has('view_all') && $request->has('division') && $request->division != '') {
+                    $historyQuery->whereHas('user', function ($q) use ($request) {
+                        $q->where('division', $request->division);
+                    });
+                }
+            }
+            
+            // Date Filtering (History uses completed_at)
+            if ($request->filled('start_date')) {
+                $historyQuery->whereDate('completed_at', '>=', $request->start_date);
+            }
+            if ($request->filled('end_date')) {
+                $historyQuery->whereDate('completed_at', '<=', $request->end_date);
+            }
+
+            if ($request->filled('nik')) {
+                $historyQuery->whereHas('user', function ($q) use ($request) {
+                    $q->where('nik', 'like', '%' . $request->nik . '%');
+                });
+            }
+
+            // Status Kelulusan Filtering
+            if ($request->filled('status_kelulusan')) {
+                if ($request->status_kelulusan == 'lulus') {
+                    $historyQuery->where('score', '>=', $passingGrade);
+                } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                    $historyQuery->where('score', '<', $passingGrade);
+                }
+            }
+
+            // Sub Category Filtering (History doesn't support this)
+            if ($request->filled('sub_category')) {
+                $historyQuery->whereRaw('1 = 0');
+            }
+
+            $historyResults = $historyQuery->latest('archived_at')->get();
         }
+        
+        // Merge collections
+        $merged = $activeResults->concat($historyResults);
+
+        $fileName = 'Laporan_Hasil_Evaluasi';
+        if (!$request->has('view_all') && $request->has('division') && $request->division != '') {
+            $fileName .= '_' . ucfirst($request->division);
+        } else {
+            $fileName .= '_Semua_Bagian';
+        }
+        
+        if ($exportType == 'active') {
+            $fileName .= '_Active_Only';
+        } elseif ($exportType == 'history') {
+            $fileName .= '_Reset_History';
+        }
+
+        if ($request->filled('status_kelulusan')) {
+            $fileName .= '_' . ucfirst($request->status_kelulusan);
+        }
+
+        if ($request->filled('sub_category')) {
+            $fileName .= '_' . ucfirst(Str::slug($request->sub_category));
+        }
+
         $fileName .= '_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-        return Excel::download(new EvaluationExport($results), $fileName);
+        // Pass passing grade to export class
+        return Excel::download(new EvaluationExport($merged, $passingGrade), $fileName);
     }
 
     // Grading Methods
@@ -435,17 +730,10 @@ class EvaluationController extends Controller
 
     private function recalculateAndSave(EvaluationResult $result)
     {
-        // Get all answers for this user, filtered by their division (to avoid counting old/irrelevant answers)
-        $userDivision = $result->user->division;
-        
+        // Get all answers for this user
         $answers = EvaluationAnswer::where('user_id', $result->user_id)
-            ->whereHas('evaluation', function($q) use ($userDivision) {
+            ->whereHas('evaluation', function($q) {
                 $q->withTrashed();
-                if ($userDivision) {
-                    $q->where('category', $userDivision);
-                } else {
-                    $q->whereNull('category');
-                }
             })
             ->get();
         

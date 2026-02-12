@@ -35,14 +35,7 @@ class AttendanceSeeder extends Seeder
                 'status' => 'present',
             ]);
 
-            // 2 days ago (Sick)
-            Attendance::create([
-                'user_id' => $user->id,
-                'date' => Carbon::today()->subDays(2),
-                'time_in' => null,
-                'time_out' => null,
-                'status' => 'sick',
-            ]);
+           
         }
     }
 }

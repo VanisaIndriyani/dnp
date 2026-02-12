@@ -14,29 +14,34 @@
         <form action="{{ route('super_admin.evaluation.update', $evaluation) }}" method="POST">
             @csrf
             @method('PUT')
-            
+
             <div class="mb-3">
                 <label class="form-label">Tipe Soal</label>
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input type-selector" type="radio" name="type" id="type-mc" value="multiple_choice" {{ old('type', $evaluation->type) != 'essay' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="type-mc">Pilihan Ganda</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" id="type_mc" value="multiple_choice" {{ old('type', $evaluation->type) == 'multiple_choice' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="type_mc">Pilihan Ganda</label>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input type-selector" type="radio" name="type" id="type-essay" value="essay" {{ old('type', $evaluation->type) == 'essay' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="type-essay">Essay</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" id="type_essay" value="essay" {{ old('type', $evaluation->type) == 'essay' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="type_essay">Essay</label>
                     </div>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Kategori / Bagian</label>
-                <select class="form-select" name="category" required>
-                    <option value="">Pilih Bagian</option>
-                    <option value="cover" {{ old('category', $evaluation->category) == 'cover' ? 'selected' : '' }}>Cover</option>
-                    <option value="case" {{ old('category', $evaluation->category) == 'case' ? 'selected' : '' }}>Case</option>
-                    <option value="inner" {{ old('category', $evaluation->category) == 'inner' ? 'selected' : '' }}>Inner</option>
-                    <option value="endplate" {{ old('category', $evaluation->category) == 'endplate' ? 'selected' : '' }}>Endplate</option>
+                <input type="hidden" name="category" value="{{ $evaluation->category }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Kategori Soal</label>
+                <select class="form-select" name="sub_category" required>
+                    <option value="" disabled>Pilih Kategori</option>
+                    <option value="General" {{ old('sub_category', $evaluation->sub_category) == 'General' ? 'selected' : '' }}>General</option>
+                    <option value="Safety" {{ old('sub_category', $evaluation->sub_category) == 'Safety' ? 'selected' : '' }}>Safety</option>
+                    <option value="Technical" {{ old('sub_category', $evaluation->sub_category) == 'Technical' ? 'selected' : '' }}>Technical</option>
+                    <option value="Quality" {{ old('sub_category', $evaluation->sub_category) == 'Quality' ? 'selected' : '' }}>Quality</option>
+                    <option value="SOP" {{ old('sub_category', $evaluation->sub_category) == 'SOP' ? 'selected' : '' }}>SOP</option>
                 </select>
             </div>
 

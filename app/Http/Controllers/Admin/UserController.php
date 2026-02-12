@@ -11,20 +11,19 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
+        $pendingQuery = User::where('status', 'pending');
+        $activeQuery = User::where('status', 'active');
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('nik', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
+            $pendingQuery->where('nik', 'like', "%{$search}%");
+            $activeQuery->where('nik', 'like', "%{$search}%");
         }
 
-        $users = $query->latest()->paginate(10);
+        $pendingUsers = $pendingQuery->latest()->get();
+        $users = $activeQuery->latest()->paginate(10);
 
-        return view('super_admin.users.index', compact('users'));
+        return view('super_admin.users.index', compact('users', 'pendingUsers'));
     }
 
     public function create()
