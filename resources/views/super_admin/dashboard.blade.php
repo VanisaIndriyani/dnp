@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="mt-3 text-muted small">
-                <i class="fas fa-arrow-up text-success me-1"></i> Data terupdate
+                <i class="fas fa-arrow-up me-1" style="color: var(--primary-color);"></i> Data terupdate
             </div>
         </div>
     </div>
@@ -50,12 +50,12 @@
                     <div class="stats-title">Total Admin</div>
                     <div class="stats-value">{{ \App\Models\User::where('role', 'admin')->count() }}</div>
                 </div>
-                <div class="stats-icon info">
+                <div class="stats-icon">
                     <i class="fas fa-user-shield"></i>
                 </div>
             </div>
             <div class="mt-3 text-muted small">
-                <i class="fas fa-user-check text-info me-1"></i> Aktif memantau
+                <i class="fas fa-user-check me-1" style="color: var(--primary-color);"></i> Aktif memantau
             </div>
         </div>
     </div>
@@ -68,12 +68,12 @@
                     <div class="stats-title">Hadir Hari Ini</div>
                     <div class="stats-value">{{ \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())->count() }}</div>
                 </div>
-                <div class="stats-icon success">
+                <div class="stats-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
             </div>
             <div class="mt-3 text-muted small">
-                <i class="fas fa-clock text-success me-1"></i> Realtime update
+                <i class="fas fa-clock me-1" style="color: var(--primary-color);"></i> Realtime update
             </div>
         </div>
     </div>
@@ -92,16 +92,58 @@
                         {{ max(0, $totalUsers - $attended) }}
                     </div>
                 </div>
-                <div class="stats-icon warning">
+                <div class="stats-icon">
                     <i class="fas fa-user-times"></i>
                 </div>
             </div>
             <div class="mt-3 text-muted small">
-                <i class="fas fa-exclamation-circle text-warning me-1"></i> Belum Absen
+                <i class="fas fa-exclamation-circle me-1" style="color: var(--primary-color);"></i> Belum Absen
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .stats-card {
+        background: white;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(198, 40, 40, 0.15);
+        border: 1px solid var(--primary-color);
+    }
+    .stats-title {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .stats-value {
+        color: #212529;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background-color: rgba(198, 40, 40, 0.1);
+        color: var(--primary-color);
+    }
+</style>
 
 <!-- Recent Attendance Table -->
 <div class="row">
