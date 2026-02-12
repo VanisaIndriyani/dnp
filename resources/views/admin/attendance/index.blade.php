@@ -12,15 +12,12 @@
     <div class="col-12 col-xl-auto ms-auto">
         <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-xl-end align-items-center">
             {{-- Action Buttons --}}
-            <a href="{{ route('admin.attendance.createManual') }}" class="btn btn-danger btn-sm shadow-sm" style="background-color: var(--primary-color);">
+            <a href="{{ route('admin.attendance.createManual') }}" class="btn btn-primary btn-sm shadow-sm" style="background-color: var(--primary-color); border-color: var(--primary-color);">
                 <i class="fas fa-plus me-1"></i> Input Manual
             </a>
             <a href="{{ route('admin.attendance.export', request()->query()) }}" class="btn btn-success btn-sm shadow-sm">
                 <i class="fas fa-file-excel me-1"></i> Export
             </a>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#importModal">
-                <i class="fas fa-upload me-1"></i> Import
-            </button>
 
             <div class="vr mx-1 d-none d-xl-block bg-secondary opacity-25"></div>
 
@@ -98,11 +95,9 @@
                                     @else
                                         @php
                                             $initials = strtoupper(substr($user->name, 0, 2));
-                                            $colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#A133FF', '#33FFF5', '#F5FF33', '#FF8C33'];
-                                            $bgColor = $colors[ord($initials[0]) % count($colors)];
                                         @endphp
                                         <div class="rounded-circle me-2 d-flex align-items-center justify-content-center text-white fw-bold" 
-                                             style="width: 40px; height: 40px; background-color: {{ $bgColor }}; font-size: 14px;">
+                                             style="width: 40px; height: 40px; background-color: var(--primary-color); font-size: 14px;">
                                             {{ $initials }}
                                         </div>
                                     @endif
@@ -124,43 +119,45 @@
                             </td>
                             <td class="fw-medium">
                                 @if($timeIn)
-                                    <span class="badge bg-success">{{ \Carbon\Carbon::parse($timeIn)->format('H:i') }}</span>
+                                    <span class="badge text-white" style="background-color: var(--primary-color);">{{ \Carbon\Carbon::parse($timeIn)->format('H:i') }}</span>
                                 @else
-                                    <span class="badge bg-secondary">-</span>
+                                    <span class="badge bg-light text-secondary border">-</span>
                                 @endif
                             </td>
                             <td>
                                 @if($isMissing)
-                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
+                                    <span class="badge bg-light text-danger border border-danger rounded-pill">
                                         <i class="fas fa-times-circle me-1"></i> Tidak Hadir
                                     </span>
                                 @else
                                     @php
-                                        $statusColor = 'secondary';
+                                        $statusClass = 'bg-light text-danger border border-danger';
+                                        $statusStyle = '';
                                         $statusIcon = 'fa-question';
                                         
                                         if ($status == 'present' || $status == 'late') {
-                                            $statusColor = 'success';
+                                            $statusClass = 'text-white';
+                                            $statusStyle = 'background-color: var(--primary-color);';
                                             $statusIcon = 'fa-check-circle';
                                         } elseif ($status == 'sick') {
-                                            $statusColor = 'info';
+                                            $statusClass = 'bg-white text-danger border border-danger';
                                             $statusIcon = 'fa-procedures';
                                         } elseif ($status == 'alpha') {
-                                            $statusColor = 'danger';
+                                            $statusClass = 'bg-danger text-white';
                                             $statusIcon = 'fa-times-circle';
                                         } elseif ($status == 'permission') {
-                                            $statusColor = 'primary';
+                                            $statusClass = 'bg-white text-danger border border-danger';
                                             $statusIcon = 'fa-envelope-open-text';
                                         }
                                         
                                         $displayStatus = $status == 'late' ? 'present' : $status;
                                     @endphp
                                     <div class="d-flex flex-column gap-1">
-                                        <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} border border-{{ $statusColor }}-subtle rounded-pill">
+                                        <span class="badge {{ $statusClass }} rounded-pill" style="{{ $statusStyle }}">
                                             <i class="fas {{ $statusIcon }} me-1"></i> {{ $displayStatus == 'present' ? 'Hadir' : ucfirst($displayStatus) }}
                                         </span>
                                         @if($isApproved)
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.65rem;">
+                                            <span class="badge bg-light rounded-pill" style="font-size: 0.65rem; color: var(--primary-color); border: 1px solid var(--primary-color);">
                                                 <i class="fas fa-check-double me-1"></i> Disetujui
                                             </span>
                                         @endif
@@ -171,18 +168,18 @@
                             <td class="text-end pe-4">
                                 <div class="d-flex justify-content-end gap-1">
                                     @if($isMissing)
-                                        <a href="{{ route('admin.attendance.createManual', ['user_id' => $user->id, 'date' => $date]) }}" class="btn btn-sm btn-warning text-white px-3 shadow-sm rounded-3" title="Edit Absensi">
+                                        <a href="{{ route('admin.attendance.createManual', ['user_id' => $user->id, 'date' => $date]) }}" class="btn btn-sm btn-outline-danger px-3 shadow-sm rounded-3" title="Edit Absensi" style="border-color: var(--primary-color); color: var(--primary-color);">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     @else
-                                        <a href="{{ route('admin.attendance.edit', $attendanceId) }}" class="btn btn-sm btn-warning text-white px-3 shadow-sm rounded-3" title="Edit Absensi">
+                                        <a href="{{ route('admin.attendance.edit', $attendanceId) }}" class="btn btn-sm btn-outline-danger px-3 shadow-sm rounded-3" title="Edit Absensi" style="border-color: var(--primary-color); color: var(--primary-color);">
                                             <i class="fas fa-edit"></i>
                                         </a>
 
                                         @if(!$isApproved)
                                             <form action="{{ route('admin.attendance.approve', $attendanceId) }}" method="POST">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-success px-3 shadow-sm rounded-3" title="Setujui Absensi">
+                                                <button type="submit" class="btn btn-sm btn-danger px-3 shadow-sm rounded-3" title="Setujui Absensi" style="background-color: var(--primary-color); border-color: var(--primary-color);">
                                                     <i class="fas fa-check"></i>
                                                 </button>
                                             </form>
@@ -210,36 +207,6 @@
         <!-- Pagination -->
         <div class="px-4 py-3 border-top bg-light">
             {{ $attendances->withQueryString()->links() }}
-        </div>
-    </div>
-</div>
-
-<!-- Import Modal -->
-<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('admin.attendance.import') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="importModalLabel">Import Data Absensi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
-                        <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">
-                    </div>
-                    <div class="mb-3">
-                        <a href="{{ route('admin.attendance.template') }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-download me-1"></i> Download Template
-                        </a>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

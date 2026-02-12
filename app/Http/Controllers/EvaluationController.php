@@ -358,7 +358,7 @@ class EvaluationController extends Controller
     {
         $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
 
-        if (auth()->user()->role == 'super_admin') {
+        if (auth()->user()->role == 'super_admin' || auth()->user()->role == 'admin') {
             // Get Sub Categories for Filter
             $defaultCategories = ['General', 'Safety', 'Technical', 'Quality', 'SOP'];
             $existingCategories = Evaluation::withTrashed()->distinct()->pluck('sub_category')->filter()->toArray();
@@ -462,7 +462,11 @@ class EvaluationController extends Controller
 
             $histories = $historiesQuery->latest('archived_at')->get();
 
-            return view('super_admin.evaluation.results', compact('results', 'division', 'histories', 'passingGrade', 'stats', 'subCategories'));
+            $viewName = auth()->user()->role == 'super_admin' 
+                ? 'super_admin.evaluation.results' 
+                : 'admin.evaluation.results';
+
+            return view($viewName, compact('results', 'division', 'histories', 'passingGrade', 'stats', 'subCategories'));
         }
 
         $query = EvaluationResult::with('user');
@@ -561,6 +565,8 @@ class EvaluationController extends Controller
         }
 
         $results = $query->latest()->paginate(10);
+        
+        return view('admin.evaluation.results', compact('results'));
     }
 
     public function exportResults(Request $request)

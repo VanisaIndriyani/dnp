@@ -10,10 +10,10 @@
         <p class="text-muted mb-0">Kelola daftar pertanyaan untuk evaluasi karyawan.</p>
     </div>
     <div class="mt-3 mt-md-0 d-flex gap-2">
-        <a href="{{ route('admin.evaluation.results') }}" class="btn btn-info text-white shadow-sm">
+        <a href="{{ route('admin.evaluation.results') }}" class="btn btn-outline-primary shadow-sm">
             <i class="fas fa-poll me-2"></i>Lihat Hasil Nilai
         </a>
-        <a href="{{ route('admin.evaluation.create') }}" class="btn btn-danger shadow-sm" style="background-color: var(--primary-color);">
+        <a href="{{ route('admin.evaluation.create') }}" class="btn btn-primary shadow-sm">
             <i class="fas fa-plus me-2"></i>Tambah Soal
         </a>
     </div>
@@ -30,6 +30,9 @@
 @endif
 
 <div class="card border-0 shadow-sm">
+    <div class="card-header text-white" style="background-color: var(--primary-color);">
+        <h5 class="mb-0 fw-bold"><i class="fas fa-list me-2"></i>Daftar Soal</h5>
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -51,25 +54,25 @@
                                 <div class="small text-muted mt-1">Dibuat: {{ $evaluation->created_at->format('d M Y') }}</div>
                             </td>
                             <td>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-6 px-3">
+                                <span class="badge bg-light text-primary border border-primary rounded-pill fs-6 px-3">
                                     {{ strtoupper($evaluation->correct_answer) }}
                                 </span>
                             </td>
                             <td>
                                 <ul class="list-unstyled mb-0 small text-muted">
-                                    <li class="{{ $evaluation->correct_answer == 'a' ? 'text-success fw-bold' : '' }}">
+                                    <li class="{{ $evaluation->correct_answer == 'a' ? 'text-primary fw-bold' : '' }}">
                                         <span class="fw-bold me-1">A.</span> {{ $evaluation->option_a }}
                                         @if($evaluation->correct_answer == 'a') <i class="fas fa-check ms-1"></i> @endif
                                     </li>
-                                    <li class="{{ $evaluation->correct_answer == 'b' ? 'text-success fw-bold' : '' }}">
+                                    <li class="{{ $evaluation->correct_answer == 'b' ? 'text-primary fw-bold' : '' }}">
                                         <span class="fw-bold me-1">B.</span> {{ $evaluation->option_b }}
                                         @if($evaluation->correct_answer == 'b') <i class="fas fa-check ms-1"></i> @endif
                                     </li>
-                                    <li class="{{ $evaluation->correct_answer == 'c' ? 'text-success fw-bold' : '' }}">
+                                    <li class="{{ $evaluation->correct_answer == 'c' ? 'text-primary fw-bold' : '' }}">
                                         <span class="fw-bold me-1">C.</span> {{ $evaluation->option_c }}
                                         @if($evaluation->correct_answer == 'c') <i class="fas fa-check ms-1"></i> @endif
                                     </li>
-                                    <li class="{{ $evaluation->correct_answer == 'd' ? 'text-success fw-bold' : '' }}">
+                                    <li class="{{ $evaluation->correct_answer == 'd' ? 'text-primary fw-bold' : '' }}">
                                         <span class="fw-bold me-1">D.</span> {{ $evaluation->option_d }}
                                         @if($evaluation->correct_answer == 'd') <i class="fas fa-check ms-1"></i> @endif
                                     </li>
@@ -77,7 +80,7 @@
                             </td>
                             <td class="text-end pe-4">
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('admin.evaluation.edit', $evaluation) }}" class="btn btn-sm btn-outline-warning shadow-sm" title="Edit">
+                                    <a href="{{ route('admin.evaluation.edit', $evaluation) }}" class="btn btn-sm btn-outline-primary shadow-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('admin.evaluation.destroy', $evaluation) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus soal ini?')">
