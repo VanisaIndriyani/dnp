@@ -205,13 +205,9 @@
                                     <a href="{{ route('super_admin.evaluation.grade', $result->id) }}" class="btn btn-sm btn-outline-danger rounded-2 fw-bold" title="{{ $result->status == 'pending' ? 'Beri Nilai' : 'Edit Nilai' }}">
                                         <i class="fas {{ $result->status == 'pending' ? 'fa-pen-alt' : 'fa-edit' }}"></i> {{ $result->status == 'pending' ? 'Nilai' : 'Edit' }}
                                     </a>
-                                    <form action="{{ route('super_admin.evaluation.results.destroy', $result->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin mereset hasil evaluasi ini? Operator harus mengerjakan ulang.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger rounded-2" title="Reset / Hapus">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-danger rounded-2" title="Reset Ujian" onclick="confirmReset('{{ route('super_admin.evaluation.results.destroy', $result->id) }}', '{{ $result->user->name }}')">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -262,5 +258,48 @@
         </div>
     </div>
 </div>
+
+<!-- Reset Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Reset Ujian</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="avatar-lg bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 64px; height: 64px;">
+                        <i class="fas fa-redo fa-2x"></i>
+                    </div>
+                </div>
+                <p class="mb-2 text-center">Apakah Anda yakin ingin mereset hasil ujian untuk operator <strong id="resetOperatorName"></strong>?</p>
+                <div class="alert alert-warning d-flex align-items-center small mt-3" role="alert">
+                    <i class="fas fa-info-circle me-2 flex-shrink-0 fa-lg"></i>
+                    <div>
+                        <strong>Perhatian:</strong> Tindakan ini akan menghapus seluruh jawaban dan nilai yang sudah ada. Operator harus mengerjakan ujian dari awal lagi.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <form id="resetForm" action="" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger fw-bold">Ya, Reset Ujian</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmReset(url, name) {
+        document.getElementById('resetForm').action = url;
+        document.getElementById('resetOperatorName').textContent = name;
+        var resetModal = new bootstrap.Modal(document.getElementById('resetModal'));
+        resetModal.show();
+    }
+</script>
 
 @endsection
