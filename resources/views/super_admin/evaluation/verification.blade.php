@@ -191,20 +191,27 @@
                             </td>
                             <td class="text-center">
                                 @if($result->status == 'pending')
-                                    <span class="badge bg-warning text-dark border border-warning">
-                                        <i class="fas fa-spinner fa-spin me-1 small"></i>Menunggu Penilaian
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm">
+                                        <i class="fas fa-spinner fa-spin"></i> <span>Menunggu Penilaian</span>
                                     </span>
                                 @else
-                                    <span class="badge bg-success text-white">
-                                        <i class="fas fa-check me-1 small"></i>Sudah Dinilai
+                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm">
+                                        <i class="fas fa-check-circle"></i> <span>Sudah Dinilai</span>
                                     </span>
                                 @endif
                             </td>
                             <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    <a href="{{ route('super_admin.evaluation.grade', $result->id) }}" class="btn btn-sm btn-outline-danger" title="{{ $result->status == 'pending' ? 'Beri Nilai' : 'Edit Nilai' }}">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{{ route('super_admin.evaluation.grade', $result->id) }}" class="btn btn-sm btn-outline-danger rounded-2 fw-bold" title="{{ $result->status == 'pending' ? 'Beri Nilai' : 'Edit Nilai' }}">
                                         <i class="fas {{ $result->status == 'pending' ? 'fa-pen-alt' : 'fa-edit' }}"></i> {{ $result->status == 'pending' ? 'Nilai' : 'Edit' }}
                                     </a>
+                                    <form action="{{ route('super_admin.evaluation.results.destroy', $result->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin mereset hasil evaluasi ini? Operator harus mengerjakan ulang.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger rounded-2" title="Reset / Hapus">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

@@ -144,7 +144,7 @@ class EvaluationController extends Controller
              return redirect()->route(auth()->user()->role . '.evaluation.results')->with('success', "Evaluasi selesai. Jawaban esai Anda telah disimpan dan menunggu penilaian.");
         }
 
-        return redirect()->route(auth()->user()->role . '.evaluation.results')->with('success', "Evaluasi selesai. Nilai Anda: {$result->score}");
+        return redirect()->route(auth()->user()->role . '.evaluation.results')->with('success', "Evaluasi selesai. Hasil akan diinformasikan setelah verifikasi.");
     }
 
     public function index(Request $request)
