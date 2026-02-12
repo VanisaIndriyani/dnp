@@ -52,6 +52,8 @@ Route::prefix('super_admin')->name('super_admin.')->middleware(['auth'])->group(
     Route::post('/attendance/{attendance}/approve', [AttendanceController::class, 'approve'])->name('attendance.approve');
 
     // Evaluation
+    Route::get('/evaluation/verification', [EvaluationController::class, 'verification'])->name('evaluation.verification');
+    Route::post('/evaluation/publish-all', [EvaluationController::class, 'publishAll'])->name('evaluation.publishAll');
     Route::get('/evaluation/start', [EvaluationController::class, 'start'])->name('evaluation.start');
     Route::post('/evaluation/submit', [EvaluationController::class, 'submit'])->name('evaluation.submit');
     Route::delete('/evaluation/destroy-all', [EvaluationController::class, 'destroyAll'])->name('evaluation.destroyAll');

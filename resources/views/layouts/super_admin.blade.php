@@ -40,7 +40,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('super_admin.evaluation.results') }}" class="{{ request()->routeIs('super_admin.evaluation.results') || request()->routeIs('super_admin.evaluation.grade') ? 'active' : '' }}">
+                <a href="{{ route('super_admin.evaluation.verification') }}" class="{{ request()->routeIs('super_admin.evaluation.verification') || request()->routeIs('super_admin.evaluation.results') || request()->routeIs('super_admin.evaluation.grade') ? 'active' : '' }}">
                     <i class="fas fa-poll-h"></i> Hasil Evaluasi
                 </a>
             </li>

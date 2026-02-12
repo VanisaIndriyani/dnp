@@ -186,7 +186,10 @@
                             <div class="vr mx-1 d-none d-xl-block bg-secondary opacity-25 py-3 align-self-center"></div>
 
                             {{-- Export Button --}}
-                            <div class="ms-auto pb-0">
+                            <div class="ms-auto pb-0 d-flex gap-2">
+                                <a href="{{ route('super_admin.evaluation.verification') }}" class="btn btn-warning btn-sm shadow-sm rounded-3 fw-bold px-3 py-2 d-flex align-items-center gap-2 text-dark">
+                                    <i class="fas fa-clipboard-check"></i> Verifikasi Nilai Baru
+                                </a>
                                 <a href="{{ route('super_admin.evaluation.results.export', array_merge(request()->query(), ['export_type' => 'all'])) }}" class="btn btn-success btn-sm shadow-sm rounded-3 fw-bold px-3 py-2 d-flex align-items-center gap-2">
                                     <i class="fas fa-file-excel"></i> Export Excel
                                 </a>
@@ -214,7 +217,6 @@
                         <th class="text-center py-3" width="8%">Status</th>
                         <th class="text-center py-3" width="8%">Penilaian</th>
                         <th class="py-3" width="10%">Tanggal</th>
-                        <th class="text-end pe-4 py-3" width="10%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="border-top-0">
@@ -269,16 +271,6 @@
                             <td class="text-muted small">
                                 <i class="far fa-calendar me-1"></i>{{ $result->created_at->format('d/m/y') }}<br>
                                 <i class="far fa-clock me-1"></i>{{ $result->created_at->format('H:i') }}
-                            </td>
-                            <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    <a href="{{ route('super_admin.evaluation.grade', $result->id) }}" class="btn btn-sm" style="border: 1px solid var(--primary-color); color: var(--primary-color);" title="{{ $result->status == 'pending' ? 'Beri Nilai' : 'Edit Nilai' }}">
-                                        <i class="fas {{ $result->status == 'pending' ? 'fa-pen-alt' : 'fa-edit' }}"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Reset Evaluasi" onclick="confirmReset('{{ route('super_admin.evaluation.results.destroy', $result->id) }}')">
-                                        <i class="fas fa-redo-alt"></i>
-                                    </button>
-                                </div>
                             </td>
                         </tr>
                     @empty
@@ -343,11 +335,6 @@
                             <td class="text-muted small">
                                 <span class="d-block text-secondary"><i class="fas fa-history me-1"></i>Reset:</span>
                                 {{ $history->archived_at->format('d/m/y') }}
-                            </td>
-                            <td class="text-end pe-4">
-                                <button type="button" class="btn btn-sm btn-light text-muted border-0" disabled title="Data telah direset">
-                                    <i class="fas fa-check-circle me-1"></i>Selesai
-                                </button>
                             </td>
                         </tr>
                         @endforeach

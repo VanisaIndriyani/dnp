@@ -401,7 +401,7 @@ class EvaluationController extends Controller
             $division = $request->has('view_all') ? null : $request->division;
             
             // --- Active Results Query ---
-            $query = EvaluationResult::with('user');
+            $query = EvaluationResult::with('user')->where('is_published', true);
             
             if ($division) {
                 $query->whereHas('user', function ($q) use ($division) {
@@ -442,42 +442,8 @@ class EvaluationController extends Controller
 
             $results = $query->latest()->paginate(10);
             
-            // --- History Results Query ---
-            $historiesQuery = \App\Models\EvaluationHistory::with('user');
-            
-            if ($division) {
-                $historiesQuery->whereHas('user', function ($q) use ($division) {
-                    $q->where('division', $division);
-                });
-            }
-            
-            if ($request->filled('start_date')) {
-                $historiesQuery->whereDate('completed_at', '>=', $request->start_date);
-            }
-            if ($request->filled('end_date')) {
-                $historiesQuery->whereDate('completed_at', '<=', $request->end_date);
-            }
-
-            if ($request->filled('nik')) {
-                $historiesQuery->whereHas('user', function ($q) use ($request) {
-                    $q->where('nik', 'like', '%' . $request->nik . '%');
-                });
-            }
-            
-            if ($request->filled('status_kelulusan')) {
-                if ($request->status_kelulusan == 'lulus') {
-                    $historiesQuery->where('score', '>=', $passingGrade);
-                } elseif ($request->status_kelulusan == 'tidak_lulus') {
-                    $historiesQuery->where('score', '<', $passingGrade);
-                }
-            }
-            
-            // Sub Category Filtering (History doesn't support this, so return empty)
-            if ($request->filled('sub_category')) {
-                $historiesQuery->whereRaw('1 = 0');
-            }
-
-            $histories = $historiesQuery->latest('archived_at')->get();
+            // --- History Results Query (Disabled as per request) ---
+            $histories = collect();
 
             $viewName = auth()->user()->role == 'super_admin' 
                 ? 'super_admin.evaluation.results' 
@@ -496,7 +462,8 @@ class EvaluationController extends Controller
 
             // 2. Active Results Query
             $activeQuery = EvaluationResult::with(['user', 'answers.evaluation'])
-                ->where('user_id', auth()->id());
+                ->where('user_id', auth()->id())
+                ->where('is_published', true);
 
             // Filters for Active
             if ($request->filled('status_kelulusan')) {
@@ -718,6 +685,94 @@ class EvaluationController extends Controller
         return Excel::download(new EvaluationExport($merged, $passingGrade), $fileName);
     }
 
+    public function verification(Request $request)
+    {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403);
+        }
+
+        $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
+        $defaultCategories = ['General', 'Safety', 'Technical', 'Quality', 'SOP'];
+        $existingCategories = Evaluation::withTrashed()->distinct()->pluck('sub_category')->filter()->toArray();
+        $subCategories = array_values(array_unique(array_merge($defaultCategories, $existingCategories)));
+
+        // 1. Calculate Stats for Verification (Unpublished)
+        $allDivisions = ['cover', 'case', 'inner', 'endplate'];
+        $stats = [];
+        foreach ($allDivisions as $div) {
+            $statQuery = EvaluationResult::whereHas('user', function ($q) use ($div) {
+                $q->where('division', $div);
+            })->where('is_published', false);
+            
+            $stats[$div] = [
+                'total' => (clone $statQuery)->count(),
+                'pending' => (clone $statQuery)->where('status', 'pending')->count(),
+                'graded' => (clone $statQuery)->where('status', 'graded')->count(),
+            ];
+        }
+
+        // 2. Prepare Results Query
+        $division = $request->has('view_all') ? null : $request->division;
+        
+        $query = EvaluationResult::with('user')->where('is_published', false);
+        
+        if ($division) {
+            $query->whereHas('user', function ($q) use ($division) {
+                $q->where('division', $division);
+            });
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        if ($request->filled('nik')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('nik', 'like', '%' . $request->nik . '%');
+            });
+        }
+        
+        if ($request->filled('status_kelulusan')) {
+            if ($request->status_kelulusan == 'lulus') {
+                $query->where('score', '>=', $passingGrade);
+            } elseif ($request->status_kelulusan == 'tidak_lulus') {
+                $query->where('score', '<', $passingGrade);
+            }
+        }
+
+        if ($request->filled('sub_category')) {
+            $query->whereHas('answers.evaluation', function ($q) use ($request) {
+                $q->where('sub_category', $request->sub_category);
+            });
+        }
+
+        $results = $query->latest()->paginate(10);
+        
+        return view('super_admin.evaluation.verification', compact('results', 'division', 'passingGrade', 'stats', 'subCategories'));
+    }
+
+    public function publishAll(Request $request)
+    {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403);
+        }
+        
+        $query = EvaluationResult::where('is_published', false);
+        
+        if ($request->filled('division')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('division', $request->division);
+            });
+        }
+        
+        $count = $query->update(['is_published' => true]);
+        
+        return redirect()->route('super_admin.evaluation.results', $request->all())->with('success', "$count data evaluasi berhasil dipublish dan ditampilkan di daftar utama.");
+    }
+
     // Grading Methods
     public function grade($id)
     {
@@ -765,6 +820,10 @@ class EvaluationController extends Controller
         
         // 2. Recalculate Total Score from Scratch (All Answers)
         $this->recalculateAndSave($result);
+        
+        if (!$result->is_published) {
+             return redirect()->route('super_admin.evaluation.verification', ['division' => $result->user->division])->with('success', 'Penilaian berhasil disimpan. Data masih dalam status verifikasi.');
+        }
         
         return redirect()->route(auth()->user()->role . '.evaluation.results', ['division' => $result->user->division])->with('success', 'Penilaian berhasil disimpan. Skor akhir telah diperbarui.');
     }

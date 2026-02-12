@@ -13,6 +13,7 @@ class EvaluationResult extends Model
         'user_id',
         'score',
         'status',
+        'is_published',
     ];
 
     public function user()

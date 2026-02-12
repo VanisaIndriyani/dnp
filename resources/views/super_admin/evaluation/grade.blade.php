@@ -10,8 +10,8 @@
             <h1 class="h3 mb-0 text-gray-800">Penilaian Jawaban Evaluasi</h1>
             <p class="mb-0 text-muted">Review dan berikan nilai untuk jawaban essay operator.</p>
         </div>
-        <a href="{{ route('super_admin.evaluation.results') }}" class="btn btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50 me-2"></i>Kembali ke Hasil
+        <a href="{{ $result->is_published ? route('super_admin.evaluation.results') : route('super_admin.evaluation.verification') }}" class="btn btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50 me-2"></i>Kembali
         </a>
     </div>
 

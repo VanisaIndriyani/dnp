@@ -1,14 +1,14 @@
 @extends('layouts.operator')
 
-@section('title', 'Hasil Evaluasi')
+@section('title', 'Riwayat Ujian')
 
 @section('content')
 
 {{-- PAGE HEADER --}}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
-        <h2 class="mb-1 fw-bold text-dark">Hasil Nilai Evaluasi</h2>
-        <p class="text-muted mb-0">Lihat riwayat dan hasil evaluasi Anda.</p>
+        <h2 class="mb-1 fw-bold text-dark">Riwayat Ujian</h2>
+        <p class="text-muted mb-0">Lihat riwayat dan hasil evaluasi Anda yang telah diterbitkan.</p>
     </div>
 </div>
 

@@ -41,7 +41,7 @@
             </li>
             <li>
                 <a href="{{ route('operator.evaluation.results') }}" class="{{ request()->routeIs('operator.evaluation.results') ? 'active' : '' }}">
-                    <i class="fas fa-poll"></i> Hasil Evaluasi
+                    <i class="fas fa-history"></i> Riwayat Ujian
                 </a>
             </li>
             <li>
