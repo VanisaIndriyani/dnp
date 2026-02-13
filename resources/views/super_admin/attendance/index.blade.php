@@ -128,36 +128,24 @@
                             </td>
                             <td>
                                 @if($isMissing)
-                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
+                                    <span class="badge bg-danger text-white border border-danger rounded-pill px-3 py-2">
                                         <i class="fas fa-times-circle me-1"></i> Tidak Hadir
                                     </span>
                                 @else
                                     @php
-                                        $statusColor = 'secondary';
-                                        $statusIcon = 'fa-question';
+                                        // Simplify Status Logic: Only 'Hadir' (Green) or 'Tidak Hadir' (Red)
+                                        $isPresent = ($status == 'present' || $status == 'late');
                                         
-                                        if ($status == 'present' || $status == 'late') {
-                                            $statusColor = 'success';
-                                            $statusIcon = 'fa-check-circle';
-                                        } elseif ($status == 'sick') {
-                                            $statusColor = 'info';
-                                            $statusIcon = 'fa-procedures';
-                                        } elseif ($status == 'alpha') {
-                                            $statusColor = 'danger';
-                                            $statusIcon = 'fa-times-circle';
-                                        } elseif ($status == 'permission') {
-                                            $statusColor = 'primary';
-                                            $statusIcon = 'fa-envelope-open-text';
-                                        }
-
-                                        $displayStatus = $status == 'late' ? 'present' : $status;
+                                        $statusColor = $isPresent ? 'success' : 'danger';
+                                        $statusIcon = $isPresent ? 'fa-check-circle' : 'fa-times-circle';
+                                        $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
                                     @endphp
                                     <div class="d-flex flex-column gap-1">
-                                        <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }} border border-{{ $statusColor }}-subtle rounded-pill">
-                                            <i class="fas {{ $statusIcon }} me-1"></i> {{ $displayStatus == 'present' ? 'Hadir' : ucfirst($displayStatus) }}
+                                        <span class="badge bg-{{ $statusColor }} text-white border border-{{ $statusColor }} rounded-pill px-3 py-2">
+                                            <i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}
                                         </span>
                                         @if($isApproved)
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.65rem;">
+                                            <span class="badge bg-light text-success border border-success rounded-pill mt-1" style="font-size: 0.7rem;">
                                                 <i class="fas fa-check-double me-1"></i> Disetujui
                                             </span>
                                         @endif

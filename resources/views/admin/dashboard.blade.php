@@ -50,6 +50,7 @@
                     <div class="stats-title">Hadir Hari Ini</div>
                     <div class="stats-value">
                         {{ \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())
+                            ->where('status', 'present')
                             ->whereHas('user', function($q) {
                                 $q->where('role', 'operator');
                             })->count() }}
@@ -74,12 +75,13 @@
                     <div class="stats-value">
                         @php
                             $totalOps = \App\Models\User::where('role', 'operator')->count();
-                            $attendedOps = \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())
+                            $presentOps = \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())
+                                ->where('status', 'present')
                                 ->whereHas('user', function($q) {
                                     $q->where('role', 'operator');
                                 })->count();
                         @endphp
-                        {{ max(0, $totalOps - $attendedOps) }}
+                        {{ max(0, $totalOps - $presentOps) }}
                     </div>
                 </div>
                 <div class="stats-icon danger">
@@ -159,7 +161,13 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($attendance->time_in)->format('H:i') }}</td>
                                 <td>
-                                    <span class="badge bg-success-subtle text-success">Hadir</span>
+                                    @php
+                                        $isPresent = ($attendance->status == 'present' || $attendance->status == 'late');
+                                        $statusClass = $isPresent ? 'bg-success' : 'bg-danger';
+                                        $statusIcon = $isPresent ? 'fa-check-circle' : 'fa-times-circle';
+                                        $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
+                                    @endphp
+                                    <span class="badge {{ $statusClass }}"><i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}</span>
                                 </td>
                             </tr>
                             @empty

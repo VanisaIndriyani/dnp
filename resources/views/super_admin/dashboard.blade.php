@@ -205,7 +205,13 @@
                                     <small class="text-muted d-block">WIB</small>
                                 </td>
                                 <td>
-                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Hadir</span>
+                                    @php
+                                        $isPresent = ($attendance->status == 'present' || $attendance->status == 'late');
+                                        $statusClass = $isPresent ? 'bg-success' : 'bg-danger';
+                                        $statusIcon = $isPresent ? 'fa-check-circle' : 'fa-times-circle';
+                                        $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
+                                    @endphp
+                                    <span class="badge {{ $statusClass }}"><i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}</span>
                                 </td>
                             </tr>
                             @empty

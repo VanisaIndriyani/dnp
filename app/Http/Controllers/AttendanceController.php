@@ -172,13 +172,21 @@ class AttendanceController extends Controller
 
     public function index(Request $request)
     {
-        // Handle "Tidak Hadir" filter (Users without attendance)
+        // Handle "Tidak Hadir" filter (Users without attendance OR with non-present status)
         if ($request->status == 'tidak_hadir') {
             $date = $request->date ?? Carbon::today()->toDateString();
             
             $query = \App\Models\User::where('role', 'operator')
-                ->whereDoesntHave('attendances', function ($q) use ($date) {
-                    $q->whereDate('date', $date);
+                ->where(function($q) use ($date) {
+                    // Case 1: No attendance record at all
+                    $q->whereDoesntHave('attendances', function ($subQ) use ($date) {
+                        $subQ->whereDate('date', $date);
+                    })
+                    // Case 2: Has attendance but status is NOT 'present' (e.g. alpha, sick)
+                    ->orWhereHas('attendances', function ($subQ) use ($date) {
+                        $subQ->whereDate('date', $date)
+                             ->where('status', '!=', 'present');
+                    });
                 });
 
             // Filter by Division
@@ -224,8 +232,12 @@ class AttendanceController extends Controller
 
             // Filter by Status (present, late, sick, etc.)
             // Note: 'hadir' filter is implicit here as we are querying Attendance model
-            if ($request->has('status') && $request->status != 'hadir' && $request->status != '') {
-                 $query->where('status', $request->status);
+            if ($request->has('status') && $request->status != '') {
+                if ($request->status == 'hadir') {
+                     $query->where('status', 'present');
+                } else {
+                     $query->where('status', $request->status);
+                }
             }
 
             $attendances = $query->latest()->paginate(10);
