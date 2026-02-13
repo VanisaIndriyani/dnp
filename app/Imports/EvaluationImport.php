@@ -21,7 +21,8 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
     public function model(array $row)
     {
         // Question & Options aliases
-        $question = $row['question'] ?? $row['pertanyaan'] ?? $row['soal'] ?? $row['tanya'] ?? null;
+        // Added 'soal_essay' and 'soal_esai' to support the user's Excel header "Soal Essay"
+        $question = $row['question'] ?? $row['pertanyaan'] ?? $row['soal'] ?? $row['tanya'] ?? $row['soal_essay'] ?? $row['soal_esai'] ?? null;
         if (!$question) return null; // Skip empty rows
 
         $optionA = $row['option_a'] ?? $row['opsi_a'] ?? $row['pilihan_a'] ?? $row['a'] ?? null;
