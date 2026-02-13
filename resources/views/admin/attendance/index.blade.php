@@ -139,7 +139,7 @@
                             </td>
                             <td>
                                 @if($isMissing)
-                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #dc3545; color: white;">
+                                    <span class="badge rounded-pill px-2 py-1" style="background-color: #dc3545; color: white; font-size: 11px;">
                                         <i class="fas fa-times-circle me-1"></i> Tidak Hadir
                                     </span>
                                 @else
@@ -152,11 +152,11 @@
                                         $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
                                     @endphp
                                     <div class="d-flex flex-column gap-1">
-                                        <span class="badge rounded-pill px-3 py-2" style="background-color: {{ $bgColor }}; color: white;">
+                                        <span class="badge rounded-pill px-2 py-1" style="background-color: {{ $bgColor }}; color: white; font-size: 11px;">
                                             <i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}
                                         </span>
                                         @if($isApproved)
-                                            <span class="badge bg-light rounded-pill mt-1" style="font-size: 0.7rem; color: var(--primary-color); border: 1px solid var(--primary-color);">
+                                            <span class="badge bg-light rounded-pill mt-1" style="font-size: 10px; color: var(--primary-color); border: 1px solid var(--primary-color);">
                                                 <i class="fas fa-check-double me-1"></i> Disetujui
                                             </span>
                                         @endif
