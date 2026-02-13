@@ -172,81 +172,71 @@ class AttendanceController extends Controller
 
     public function index(Request $request)
     {
-        // Handle "Tidak Hadir" filter (Users without attendance OR with non-present status)
-        if ($request->status == 'tidak_hadir') {
-            $date = $request->date ?? Carbon::today()->toDateString();
+        // Operator Logic: Show own attendance history (Stream View)
+        if (auth()->user()->role == 'operator') {
+            $query = Attendance::where('user_id', auth()->id());
             
-            $query = \App\Models\User::where('role', 'operator')
-                ->where(function($q) use ($date) {
-                    // Case 1: No attendance record at all
-                    $q->whereDoesntHave('attendances', function ($subQ) use ($date) {
-                        $subQ->whereDate('date', $date);
-                    })
-                    // Case 2: Has attendance but status is NOT 'present' (e.g. alpha, sick)
-                    ->orWhereHas('attendances', function ($subQ) use ($date) {
-                        $subQ->whereDate('date', $date)
-                             ->where('status', '!=', 'present');
-                    });
-                });
-
-            // Filter by Division
-            if ($request->has('division') && $request->division != '') {
-                $query->where('division', $request->division);
-            }
-
-            // Paginate Users but pass them as "attendances" to the view
-            // The view must handle that these are User objects
-            $attendances = $query->orderBy('name')->paginate(10);
-            
-            // Append the date to each user object so the view knows which date we are talking about
-            $attendances->getCollection()->transform(function ($user) use ($date) {
-                $user->missing_date = $date;
-                return $user;
-            });
-        } else {
-            // Normal Attendance Query
-            $query = Attendance::with('user');
-
-            // If user is 'admin' (not super_admin), only show 'operator' attendance
-            if (auth()->user()->role == 'admin') {
-                $query->whereHas('user', function ($q) {
-                    $q->where('role', 'operator');
-                });
-            }
-            // If user is 'operator', only show their own attendance
-            elseif (auth()->user()->role == 'operator') {
-                $query->where('user_id', auth()->id());
-            }
-
-            // Filter by Date
             if ($request->has('date') && $request->date != '') {
                 $query->whereDate('date', $request->date);
             }
+            
+            $attendances = $query->latest()->paginate(10);
+            return view('operator.attendance.index', compact('attendances'));
+        }
 
-            // Filter by Division
-            if ($request->has('division') && $request->division != '') {
-                $query->whereHas('user', function ($q) use ($request) {
-                    $q->where('division', $request->division);
+        // Admin/Super Admin Logic: Unified Daily View Approach
+        // We always query Users (Operators) and attach their attendance for the target date.
+        // This ensures consistent filtering and listing for "Hadir", "Tidak Hadir", and "Semua Status".
+
+        $date = $request->date ?? Carbon::today()->toDateString();
+        
+        $query = User::where('role', 'operator');
+
+        // Filter by Division
+        if ($request->has('division') && $request->division != '') {
+            $query->where('division', $request->division);
+        }
+
+        // Eager load attendance for the specific date
+        // We need this to determine status in the view
+        $query->with(['attendances' => function($q) use ($date) {
+            $q->whereDate('date', $date);
+        }]);
+
+        // Filter by Status
+        if ($request->has('status') && $request->status != '') {
+            if ($request->status == 'hadir') {
+                // Show users who HAVE attendance record with 'present' status
+                $query->whereHas('attendances', function($q) use ($date) {
+                    $q->whereDate('date', $date)
+                      ->where('status', 'present');
+                });
+            } elseif ($request->status == 'tidak_hadir') {
+                // Show users who DO NOT HAVE attendance OR have status != 'present'
+                $query->where(function($q) use ($date) {
+                    $q->whereDoesntHave('attendances', function($q) use ($date) {
+                        $q->whereDate('date', $date);
+                    })
+                    ->orWhereHas('attendances', function($q) use ($date) {
+                        $q->whereDate('date', $date)
+                          ->where('status', '!=', 'present');
+                    });
                 });
             }
-
-            // Filter by Status (present, late, sick, etc.)
-            // Note: 'hadir' filter is implicit here as we are querying Attendance model
-            if ($request->has('status') && $request->status != '') {
-                if ($request->status == 'hadir') {
-                     $query->where('status', 'present');
-                } else {
-                     $query->where('status', $request->status);
-                }
-            }
-
-            $attendances = $query->latest()->paginate(10);
         }
+
+        // Order by name for a clean daily report list
+        $attendances = $query->orderBy('name')->paginate(10);
+        
+        // Transform to attach helper data for the view
+        $attendances->getCollection()->transform(function ($user) use ($date) {
+            $user->attendance_record = $user->attendances->first();
+            $user->target_date = $date;
+            return $user;
+        });
 
         if (auth()->user()->role == 'super_admin') {
             return view('super_admin.attendance.index', compact('attendances'));
-        } elseif (auth()->user()->role == 'operator') {
-            return view('operator.attendance.index', compact('attendances'));
         }
 
         return view('admin.attendance.index', compact('attendances'));

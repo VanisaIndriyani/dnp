@@ -76,14 +76,26 @@
                 <tbody>
                     @forelse($attendances as $item)
                         @php
-                            $isMissing = $item instanceof \App\Models\User;
-                            $user = $isMissing ? $item : $item->user;
-                            $date = $isMissing ? $item->missing_date : $item->date;
-                            $timeIn = $isMissing ? null : $item->time_in;
-                            $timeOut = $isMissing ? null : $item->time_out;
-                            $status = $isMissing ? 'tidak_hadir' : $item->status;
-                            $attendanceId = $isMissing ? null : $item->id;
-                            $isApproved = $isMissing ? false : $item->is_approved;
+                            // Unified Logic: $item is always a User object with attached 'attendance_record'
+                            $user = $item;
+                            $attendance = $user->attendance_record ?? null;
+                            $date = $user->target_date ?? \Carbon\Carbon::today()->toDateString();
+                            
+                            if ($attendance) {
+                                $timeIn = $attendance->time_in;
+                                $timeOut = $attendance->time_out;
+                                $status = $attendance->status;
+                                $attendanceId = $attendance->id;
+                                $isApproved = $attendance->is_approved;
+                                $isMissing = false;
+                            } else {
+                                $timeIn = null;
+                                $timeOut = null;
+                                $status = 'tidak_hadir';
+                                $attendanceId = null;
+                                $isApproved = false;
+                                $isMissing = true;
+                            }
                         @endphp
                         <tr>
                             <td class="ps-4 fw-medium text-secondary">
