@@ -13,6 +13,7 @@ class EvaluationResult extends Model
         'user_id',
         'score',
         'passing_grade',
+        'sub_categories',
         'status',
         'is_published',
     ];
@@ -49,10 +50,16 @@ class EvaluationResult extends Model
         return round($answers->avg('score'));
     }
 
-    public function getSubCategoriesAttribute()
+    public function getSubCategoriesAttribute($value)
     {
+        if (!empty($value)) {
+            return $value;
+        }
+
         return $this->answers()
-            ->with('evaluation')
+            ->with(['evaluation' => function ($query) {
+                $query->withTrashed();
+            }])
             ->get()
             ->pluck('evaluation.sub_category')
             ->unique()

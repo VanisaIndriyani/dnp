@@ -118,13 +118,15 @@ class EvaluationController extends Controller
 
         $essayExists = false;
         $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
+        $subCategories = $questions->pluck('sub_category')->unique()->filter()->implode(', ');
 
         // Create the result record first (initially score 0, will update)
         $result = EvaluationResult::create([
             'user_id' => auth()->id(),
             'score' => 0,
             'status' => 'graded', // Default, will change to pending if essay found
-            'passing_grade' => $passingGrade
+            'passing_grade' => $passingGrade,
+            'sub_categories' => $subCategories,
         ]);
 
         foreach ($questions as $question) {
@@ -885,6 +887,11 @@ class EvaluationController extends Controller
             // Backfill passing_grade if missing (for legacy data being graded)
             if (is_null($result->passing_grade)) {
                 $result->passing_grade = Setting::getValue('evaluation_passing_grade', 70);
+            }
+
+            // Backfill sub_categories if missing
+            if (empty($result->sub_categories)) {
+                $result->sub_categories = $result->sub_categories;
             }
 
             $result->save();
