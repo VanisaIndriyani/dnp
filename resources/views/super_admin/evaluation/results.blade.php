@@ -231,12 +231,12 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span class="fw-bold fs-6 {{ $result->score >= $passingGrade ? 'text-success' : 'text-danger' }}">
+                                <span class="fw-bold fs-6 {{ $result->score >= ($result->passing_grade ?? $passingGrade) ? 'text-success' : 'text-danger' }}">
                                     {{ $result->score }}
                                 </span>
                             </td>
                             <td class="text-center">
-                                @if($result->score >= $passingGrade)
+                                @if($result->score >= ($result->passing_grade ?? $passingGrade))
                                     <span class="badge bg-success rounded-pill px-3">LULUS</span>
                                 @else
                                     <span class="badge bg-danger rounded-pill px-3">TIDAK</span>
@@ -301,12 +301,12 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span class="fw-bold fs-6 {{ $history->score >= $passingGrade ? 'text-success' : 'text-danger' }} opacity-75">
+                                <span class="fw-bold fs-6 {{ $history->score >= ($history->passing_grade ?? $passingGrade) ? 'text-success' : 'text-danger' }} opacity-75">
                                     {{ $history->score }}
                                 </span>
                             </td>
                             <td class="text-center">
-                                @if($history->score >= $passingGrade)
+                                @if($history->score >= ($history->passing_grade ?? $passingGrade))
                                     <span class="badge bg-success bg-opacity-75 rounded-pill px-3">LULUS</span>
                                 @else
                                     <span class="badge bg-danger bg-opacity-75 rounded-pill px-3">TIDAK</span>

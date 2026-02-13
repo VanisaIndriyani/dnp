@@ -12,6 +12,7 @@ class EvaluationResult extends Model
     protected $fillable = [
         'user_id',
         'score',
+        'passing_grade',
         'status',
         'is_published',
     ];

@@ -117,12 +117,14 @@ class EvaluationController extends Controller
         }
 
         $essayExists = false;
+        $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
 
         // Create the result record first (initially score 0, will update)
         $result = EvaluationResult::create([
             'user_id' => auth()->id(),
             'score' => 0,
-            'status' => 'graded' // Default, will change to pending if essay found
+            'status' => 'graded', // Default, will change to pending if essay found
+            'passing_grade' => $passingGrade
         ]);
 
         foreach ($questions as $question) {
@@ -879,6 +881,12 @@ class EvaluationController extends Controller
             
             $result->score = round($averageScore);
             $result->status = 'graded';
+            
+            // Backfill passing_grade if missing (for legacy data being graded)
+            if (is_null($result->passing_grade)) {
+                $result->passing_grade = Setting::getValue('evaluation_passing_grade', 70);
+            }
+
             $result->save();
         }
     }
