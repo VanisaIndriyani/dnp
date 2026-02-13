@@ -591,7 +591,7 @@ class EvaluationController extends Controller
 
     public function exportResults(Request $request)
     {
-        $exportType = $request->input('export_type', 'all'); // 'all', 'active', 'history'
+        $exportType = $request->input('export_type', 'active'); // Default to active only
         $passingGrade = Setting::getValue('evaluation_passing_grade', 70);
 
         $activeResults = collect();

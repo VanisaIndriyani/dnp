@@ -175,7 +175,7 @@
                                 <a href="{{ route('super_admin.evaluation.verification') }}" class="btn btn-warning btn-sm shadow-sm rounded-3 fw-bold px-3 py-2 d-flex align-items-center gap-2 text-dark">
                                     <i class="fas fa-clipboard-check"></i> Verifikasi Nilai Baru
                                 </a>
-                                <a href="{{ route('super_admin.evaluation.results.export', array_merge(request()->query(), ['export_type' => 'all'])) }}" class="btn btn-success btn-sm shadow-sm rounded-3 fw-bold px-3 py-2 d-flex align-items-center gap-2">
+                                <a href="{{ route('super_admin.evaluation.results.export', array_merge(request()->query(), ['export_type' => 'active'])) }}" class="btn btn-success btn-sm shadow-sm rounded-3 fw-bold px-3 py-2 d-flex align-items-center gap-2">
                                     <i class="fas fa-file-excel"></i> Export Excel
                                 </a>
                             </div>
