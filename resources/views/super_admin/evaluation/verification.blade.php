@@ -210,7 +210,7 @@
                                         <i class="fas fa-spinner fa-spin"></i> <span>Menunggu Penilaian</span>
                                     </span>
                                 @else
-                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm">
+                                    <span class="badge bg-light text-success border border-success px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm">
                                         <i class="fas fa-check-circle"></i> <span>Sudah Dinilai</span>
                                     </span>
                                 @endif
