@@ -11,28 +11,42 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
 {
     protected $defaultCategory;
     protected $subCategory;
-    protected $forcedType;
 
-    public function __construct($defaultCategory = null, $subCategory = null, $forcedType = null)
+    public function __construct($defaultCategory = null, $subCategory = null)
     {
         $this->defaultCategory = $defaultCategory;
         $this->subCategory = $subCategory;
-        $this->forcedType = $forcedType;
     }
 
     public function model(array $row)
     {
+        // Question & Options aliases
+        $question = $row['question'] ?? $row['pertanyaan'] ?? $row['soal'] ?? $row['tanya'] ?? null;
+        if (!$question) return null; // Skip empty rows
+
+        $optionA = $row['option_a'] ?? $row['opsi_a'] ?? $row['pilihan_a'] ?? $row['a'] ?? null;
+        $optionB = $row['option_b'] ?? $row['opsi_b'] ?? $row['pilihan_b'] ?? $row['b'] ?? null;
+        $optionC = $row['option_c'] ?? $row['opsi_c'] ?? $row['pilihan_c'] ?? $row['c'] ?? null;
+        $optionD = $row['option_d'] ?? $row['opsi_d'] ?? $row['pilihan_d'] ?? $row['d'] ?? null;
+        $correctAnswer = $row['correct_answer'] ?? $row['kunci'] ?? $row['jawaban'] ?? $row['benar'] ?? $row['kunci_jawaban'] ?? $row['jawaban_benar'] ?? null;
+
         // Aliases for flexibility
-        if ($this->forcedType && $this->forcedType !== 'auto') {
-            $type = $this->forcedType;
-        } else {
-            $rawType = $row['type'] ?? $row['tipe'] ?? $row['jenis'] ?? 'multiple_choice';
+        $rawType = $row['type'] ?? $row['tipe'] ?? $row['jenis'] ?? null;
+        
+        if ($rawType) {
             $type = strtolower(trim($rawType));
-            
             if ($type == 'pg' || $type == 'pilihan ganda' || $type == 'multiple choice') {
                 $type = 'multiple_choice';
             }
             if ($type == 'esai' || $type == 'essay') {
+                $type = 'essay';
+            }
+        } else {
+            // Auto-detect based on options
+            // If option A is present, assume multiple choice, otherwise essay
+            if (!empty($optionA)) {
+                $type = 'multiple_choice';
+            } else {
                 $type = 'essay';
             }
         }
@@ -49,16 +63,6 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
         } else {
             $category = $rowCategory ?: 'cover';
         }
-
-        // Question & Options aliases
-        $question = $row['question'] ?? $row['pertanyaan'] ?? $row['soal'] ?? $row['tanya'] ?? null;
-        if (!$question) return null; // Skip empty rows
-
-        $optionA = $row['option_a'] ?? $row['opsi_a'] ?? $row['pilihan_a'] ?? $row['a'] ?? null;
-        $optionB = $row['option_b'] ?? $row['opsi_b'] ?? $row['pilihan_b'] ?? $row['b'] ?? null;
-        $optionC = $row['option_c'] ?? $row['opsi_c'] ?? $row['pilihan_c'] ?? $row['c'] ?? null;
-        $optionD = $row['option_d'] ?? $row['opsi_d'] ?? $row['pilihan_d'] ?? $row['d'] ?? null;
-        $correctAnswer = $row['correct_answer'] ?? $row['kunci'] ?? $row['jawaban'] ?? $row['benar'] ?? $row['kunci_jawaban'] ?? $row['jawaban_benar'] ?? null;
         
         // Normalize correct answer to lowercase and trim
         if ($correctAnswer) {
