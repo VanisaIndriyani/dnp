@@ -10,21 +10,6 @@
         <h2 class="mb-1 fw-bold text-dark">Hasil Nilai Evaluasi</h2>
         <p class="text-muted mb-0">Monitor dan kelola hasil evaluasi operator per bagian.</p>
     </div>
-    
-    {{-- KKM WIDGET --}}
-    <div class="bg-white px-4 py-2 rounded-3 shadow-sm border d-flex align-items-center gap-3">
-        <div class="d-flex flex-column">
-            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Passing Grade (KKM)</span>
-            <div class="d-flex align-items-center gap-2">
-                <span class="h4 mb-0 fw-bold" style="color: var(--primary-color);">{{ $passingGrade }}</span>
-                <span class="badge bg-white border rounded-pill px-2 py-1" style="color: var(--primary-color); border-color: var(--primary-color) !important; font-size: 0.7rem;">Poin</span>
-            </div>
-        </div>
-        <div class="vr mx-2 bg-secondary opacity-25" style="height: 30px;"></div>
-        <button type="button" class="btn btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: 1px solid var(--primary-color); color: var(--primary-color); background: white;" data-bs-toggle="modal" data-bs-target="#updateKKMModal" title="Ubah KKM">
-            <i class="fas fa-pen fa-xs"></i>
-        </button>
-    </div>
 </div>
 
 {{-- STATS DASHBOARD --}}
@@ -351,38 +336,6 @@
 
 
 {{-- MODALS & SCRIPTS --}}
-<div class="modal fade" id="updateKKMModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-light border-bottom-0 pb-0">
-                <h6 class="modal-title fw-bold">Update KKM</h6>
-                <button type="button" class="btn-close small" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('super_admin.evaluation.update_passing_grade') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="text-center mb-4 mt-2">
-                        <div class="avatar-sm rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px; background-color: rgba(198, 40, 40, 0.1);">
-                            <span class="h4 mb-0 fw-bold" style="color: var(--primary-color);">{{ $passingGrade }}</span>
-                        </div>
-                        <p class="text-muted small mb-0">Nilai Passing Grade Saat Ini</p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="passing_grade" class="form-label small fw-bold text-muted">Nilai Baru</label>
-                        <input type="number" class="form-control text-center fw-bold fs-5" id="passing_grade" name="passing_grade" value="{{ $passingGrade }}" min="0" max="100" required>
-                        <div class="form-text text-center small">Masukkan nilai antara 0 - 100</div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-sm text-white" style="background-color: var(--primary-color);">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <form id="destroy-form" action="" method="POST" class="d-none">
     @csrf
     @method('DELETE')
