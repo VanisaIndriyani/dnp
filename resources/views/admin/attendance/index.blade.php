@@ -32,7 +32,8 @@
                 </select>
 
                 <select name="status" class="form-select form-select-sm bg-white border-secondary border-opacity-25 rounded-3 shadow-sm" style="width: auto; cursor: pointer;" onchange="this.form.submit()">
-                    <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
+                    <option value="" {{ !request('status') ? 'selected' : '' }}>Semua Status</option>
+                    <option value="hadir" {{ request('status') == 'hadir' ? 'selected' : '' }}>Hadir</option>
                     <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
                 </select>
 
@@ -41,7 +42,7 @@
                     <input type="date" name="date" class="form-control form-control-sm border-0 bg-transparent p-0 text-secondary fw-bold" style="width: 110px; font-size: 0.8rem;" value="{{ request('date') }}" onchange="this.form.submit()">
                 </div>
 
-                @if(request()->anyFilled(['division', 'date']) || (request('status') && request('status') != 'hadir'))
+                @if(request()->anyFilled(['division', 'date', 'status']))
                     <a href="{{ route('admin.attendance.index') }}" class="btn btn-light btn-sm rounded-circle border shadow-sm d-flex align-items-center justify-content-center text-danger" style="width: 32px; height: 32px;" title="Reset Filter">
                         <i class="fas fa-times fa-xs"></i>
                     </a>
@@ -126,7 +127,7 @@
                             </td>
                             <td>
                                 @if($isMissing)
-                                    <span class="badge bg-danger text-white border border-danger rounded-pill px-3 py-2">
+                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #dc3545; color: white;">
                                         <i class="fas fa-times-circle me-1"></i> Tidak Hadir
                                     </span>
                                 @else
@@ -134,12 +135,12 @@
                                         // Simplify Status Logic: Only 'Hadir' (Green) or 'Tidak Hadir' (Red)
                                         $isPresent = ($status == 'present' || $status == 'late');
                                         
-                                        $statusClass = $isPresent ? 'bg-success text-white' : 'bg-danger text-white';
+                                        $bgColor = $isPresent ? '#198754' : '#dc3545'; // Green : Red
                                         $statusIcon = $isPresent ? 'fa-check-circle' : 'fa-times-circle';
                                         $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
                                     @endphp
                                     <div class="d-flex flex-column gap-1">
-                                        <span class="badge {{ $statusClass }} border border-{{ $isPresent ? 'success' : 'danger' }} rounded-pill px-3 py-2">
+                                        <span class="badge rounded-pill px-3 py-2" style="background-color: {{ $bgColor }}; color: white;">
                                             <i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}
                                         </span>
                                         @if($isApproved)

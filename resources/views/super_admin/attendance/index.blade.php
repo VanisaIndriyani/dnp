@@ -38,7 +38,8 @@
                 <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="fas fa-filter"></i></span>
                     <select class="form-select" id="status" name="status" onchange="this.form.submit()">
-                        <option value="hadir" {{ request('status') == 'hadir' || !request('status') ? 'selected' : '' }}>Hadir</option>
+                        <option value="" {{ !request('status') ? 'selected' : '' }}>Semua Status</option>
+                        <option value="hadir" {{ request('status') == 'hadir' ? 'selected' : '' }}>Hadir</option>
                         <option value="tidak_hadir" {{ request('status') == 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir (Belum Absen)</option>
                     </select>
                 </div>
@@ -128,7 +129,7 @@
                             </td>
                             <td>
                                 @if($isMissing)
-                                    <span class="badge bg-danger text-white border border-danger rounded-pill px-3 py-2">
+                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #dc3545; color: white;">
                                         <i class="fas fa-times-circle me-1"></i> Tidak Hadir
                                     </span>
                                 @else
@@ -136,16 +137,16 @@
                                         // Simplify Status Logic: Only 'Hadir' (Green) or 'Tidak Hadir' (Red)
                                         $isPresent = ($status == 'present' || $status == 'late');
                                         
-                                        $statusColor = $isPresent ? 'success' : 'danger';
+                                        $bgColor = $isPresent ? '#198754' : '#dc3545'; // Green : Red
                                         $statusIcon = $isPresent ? 'fa-check-circle' : 'fa-times-circle';
                                         $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
                                     @endphp
                                     <div class="d-flex flex-column gap-1">
-                                        <span class="badge bg-{{ $statusColor }} text-white border border-{{ $statusColor }} rounded-pill px-3 py-2">
+                                        <span class="badge rounded-pill px-3 py-2" style="background-color: {{ $bgColor }}; color: white;">
                                             <i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}
                                         </span>
                                         @if($isApproved)
-                                            <span class="badge bg-light text-success border border-success rounded-pill mt-1" style="font-size: 0.7rem;">
+                                            <span class="badge bg-light rounded-pill mt-1" style="font-size: 0.7rem; color: var(--primary-color); border: 1px solid var(--primary-color);">
                                                 <i class="fas fa-check-double me-1"></i> Disetujui
                                             </span>
                                         @endif
