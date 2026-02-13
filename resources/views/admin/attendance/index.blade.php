@@ -151,7 +151,7 @@
                                         $statusIcon = $isPresent ? 'fa-check-circle' : 'fa-times-circle';
                                         $statusLabel = $isPresent ? 'Hadir' : 'Tidak Hadir';
                                     @endphp
-                                    <div class="d-flex flex-column gap-1">
+                                    <div class="d-flex flex-column gap-1 align-items-start">
                                         <span class="badge rounded-pill px-2 py-1" style="background-color: {{ $bgColor }}; color: white; font-size: 11px;">
                                             <i class="fas {{ $statusIcon }} me-1"></i> {{ $statusLabel }}
                                         </span>
