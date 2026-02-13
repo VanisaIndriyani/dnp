@@ -39,8 +39,9 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
     public function map($result): array
     {
         $date = $result->completed_at ?? $result->created_at;
-        $status = $result instanceof \App\Models\EvaluationHistory ? 'Riwayat (Reset)' : 'Aktif';
-        $kelulusan = $result->score >= $this->passingGrade ? 'LULUS' : 'TIDAK LULUS';
+        // Use snapshot passing_grade if available, otherwise fallback to global setting
+        $effectivePassingGrade = $result->passing_grade ?? $this->passingGrade;
+        $kelulusan = $result->score >= $effectivePassingGrade ? 'LULUS' : 'TIDAK LULUS';
         $division = ucfirst($result->user->division ?? '-');
 
         return [
@@ -54,7 +55,6 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
             strval($result->essay_score),
             strval($result->score),
             $date ? $date->format('d/m/Y H:i') : '-',
-            $status,
         ];
     }
 
@@ -71,7 +71,6 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
             'Nilai Essay',
             'Total Nilai',
             'Tanggal & Waktu',
-            'Status Data',
         ];
     }
 
@@ -96,7 +95,7 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
                 $sheet = $event->sheet;
 
                 // Title
-                $sheet->mergeCells('A1:K1');
+                $sheet->mergeCells('A1:J1');
                 $sheet->setCellValue('A1', 'Laporan Hasil Evaluasi - Training Center Part Production');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 14],
@@ -105,7 +104,7 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
                 $sheet->getRowDimension(1)->setRowHeight(25);
 
                 // Date Generated
-                $sheet->mergeCells('A2:K2');
+                $sheet->mergeCells('A2:J2');
                 $sheet->setCellValue('A2', 'Tanggal Export: ' . now()->translatedFormat('d F Y'));
                 $sheet->getStyle('A2')->applyFromArray([
                     'font' => ['bold' => true],
@@ -115,7 +114,7 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
 
                 // Borders for data
                 $lastRow = $sheet->getHighestRow();
-                $sheet->getStyle('A4:K' . $lastRow)->applyFromArray([
+                $sheet->getStyle('A4:J' . $lastRow)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -128,7 +127,7 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
                 
                 // Center align specific columns
                 $sheet->getStyle('A4:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('C4:K' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('C4:J' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 
                 // Conditional Formatting for Kelulusan (Column F)
                 for ($row = 5; $row <= $lastRow; $row++) {
