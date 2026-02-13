@@ -24,7 +24,13 @@
             </div>
 
             <input type="hidden" name="date" value="{{ $attendance->date }}">
-            <input type="hidden" name="time_in" value="{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '' }}">
+            
+            <div class="mb-4">
+                <label for="time_in" class="form-label fw-bold">Jam Masuk</label>
+                <input type="time" class="form-control" id="time_in" name="time_in" 
+                       value="{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '' }}">
+                <div class="form-text">Format 24 jam. Kosongkan jika tidak ada jam masuk.</div>
+            </div>
 
             <div class="mb-4">
                 <label for="status" class="form-label fw-bold">Status Kehadiran</label>
