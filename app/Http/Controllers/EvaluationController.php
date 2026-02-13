@@ -353,11 +353,12 @@ class EvaluationController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
-            'sub_category' => 'nullable|string'
+            'sub_category' => 'nullable|string',
+            'import_type' => 'nullable|string'
         ]);
 
         try {
-            Excel::import(new EvaluationImport($request->category, $request->sub_category), $request->file('file'));
+            Excel::import(new EvaluationImport($request->category, $request->sub_category, $request->import_type), $request->file('file'));
             return redirect()->back()->with('success', 'Soal evaluasi berhasil diimport.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal import data: ' . $e->getMessage());

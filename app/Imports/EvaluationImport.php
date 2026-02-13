@@ -11,24 +11,30 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
 {
     protected $defaultCategory;
     protected $subCategory;
+    protected $forcedType;
 
-    public function __construct($defaultCategory = null, $subCategory = null)
+    public function __construct($defaultCategory = null, $subCategory = null, $forcedType = null)
     {
         $this->defaultCategory = $defaultCategory;
         $this->subCategory = $subCategory;
+        $this->forcedType = $forcedType;
     }
 
     public function model(array $row)
     {
         // Aliases for flexibility
-        $rawType = $row['type'] ?? $row['tipe'] ?? $row['jenis'] ?? 'multiple_choice';
-        $type = strtolower(trim($rawType));
-        
-        if ($type == 'pg' || $type == 'pilihan ganda' || $type == 'multiple choice') {
-            $type = 'multiple_choice';
-        }
-        if ($type == 'esai' || $type == 'essay') {
-            $type = 'essay';
+        if ($this->forcedType && $this->forcedType !== 'auto') {
+            $type = $this->forcedType;
+        } else {
+            $rawType = $row['type'] ?? $row['tipe'] ?? $row['jenis'] ?? 'multiple_choice';
+            $type = strtolower(trim($rawType));
+            
+            if ($type == 'pg' || $type == 'pilihan ganda' || $type == 'multiple choice') {
+                $type = 'multiple_choice';
+            }
+            if ($type == 'esai' || $type == 'essay') {
+                $type = 'essay';
+            }
         }
 
         // Normalize category (Main Category: Cover, Case, etc.)

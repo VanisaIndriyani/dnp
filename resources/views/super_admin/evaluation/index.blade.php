@@ -275,6 +275,17 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="sub_category" value="{{ $subCategory ?? '' }}">
+                        
+                        <div class="mb-3">
+                            <label for="import_type" class="form-label">Jenis Soal</label>
+                            <select class="form-select" id="import_type" name="import_type">
+                                <option value="auto">Deteksi Otomatis (Sesuai Excel)</option>
+                                <option value="multiple_choice">Pilihan Ganda</option>
+                                <option value="essay">Essay</option>
+                            </select>
+                            <div class="form-text">Pilih "Essay" jika ingin mengimport soal essay tanpa kolom tipe di Excel.</div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls, .csv)</label>
                             <input type="file" class="form-control" id="file" name="file" required accept=".xlsx, .xls, .csv">
