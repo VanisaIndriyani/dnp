@@ -66,7 +66,7 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <div class="stats-title">Hadir Hari Ini</div>
-                    <div class="stats-value">{{ \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())->count() }}</div>
+                    <div class="stats-value">{{ \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())->whereHas('user', function($q){ $q->where('role', 'operator'); })->count() }}</div>
                 </div>
                 <div class="stats-icon">
                     <i class="fas fa-check-circle"></i>
@@ -86,10 +86,14 @@
                     <div class="stats-title">Tidak Hadir</div>
                     <div class="stats-value">
                         @php
-                            $totalUsers = \App\Models\User::where('role', '!=', 'super_admin')->count();
-                            $attended = \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())->count();
+                            // Only count Operators for "Tidak Hadir" calculation
+                            $totalOperators = \App\Models\User::where('role', 'operator')->count();
+                            $attendedOperators = \App\Models\Attendance::whereDate('date', \Carbon\Carbon::today())
+                                ->whereHas('user', function($q) {
+                                    $q->where('role', 'operator');
+                                })->count();
                         @endphp
-                        {{ max(0, $totalUsers - $attended) }}
+                        {{ max(0, $totalOperators - $attendedOperators) }}
                     </div>
                 </div>
                 <div class="stats-icon">
