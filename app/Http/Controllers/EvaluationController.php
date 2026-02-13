@@ -150,6 +150,7 @@ class EvaluationController extends Controller
             // Store answer for ALL questions (MC and Essay)
             EvaluationAnswer::create([
                 'user_id' => auth()->id(),
+                'evaluation_result_id' => $result->id,
                 'evaluation_id' => $question->id,
                 'answer' => $userAnswerText ?? '',
                 'score' => $scoreForQuestion
@@ -818,12 +819,11 @@ class EvaluationController extends Controller
     {
         $result = EvaluationResult::with('user')->findOrFail($id);
         
-        // Get answers for this user
-        // We assume the user took all current questions or we just find answers that exist
-        $answers = EvaluationAnswer::with(['evaluation' => function ($q) {
+        // Get answers for this SPECIFIC result
+        $answers = $result->answers()
+            ->with(['evaluation' => function ($q) {
                 $q->withTrashed();
             }])
-            ->where('user_id', $result->user_id)
             ->get();
             
         // Separate answers
@@ -870,8 +870,8 @@ class EvaluationController extends Controller
 
     private function recalculateAndSave(EvaluationResult $result)
     {
-        // Get all answers for this user
-        $answers = EvaluationAnswer::where('user_id', $result->user_id)
+        // Get all answers for this SPECIFIC result
+        $answers = $result->answers()
             ->whereHas('evaluation', function($q) {
                 $q->withTrashed();
             })

@@ -25,7 +25,7 @@ class EvaluationResult extends Model
 
     public function answers()
     {
-        return $this->hasMany(EvaluationAnswer::class, 'user_id', 'user_id');
+        return $this->hasMany(EvaluationAnswer::class, 'evaluation_result_id');
     }
 
     public function getMcScoreAttribute()

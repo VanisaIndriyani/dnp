@@ -11,6 +11,7 @@ class EvaluationAnswer extends Model
 
     protected $fillable = [
         'user_id',
+        'evaluation_result_id',
         'evaluation_id',
         'answer',
         'score',
@@ -19,6 +20,11 @@ class EvaluationAnswer extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function result()
+    {
+        return $this->belongsTo(EvaluationResult::class, 'evaluation_result_id');
     }
 
     public function evaluation()
