@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
+class EvaluationImport implements ToModel, WithValidation
 {
     protected $defaultCategory;
     protected $subCategory;
@@ -20,52 +20,89 @@ class EvaluationImport implements ToModel, WithHeadingRow, WithValidation
 
     public function model(array $row)
     {
-        // Question & Options aliases
-        // Added 'soal_essay' and 'soal_esai' to support the user's Excel header "Soal Essay"
-        $question = $row['question'] ?? $row['pertanyaan'] ?? $row['soal'] ?? $row['tanya'] ?? $row['soal_essay'] ?? $row['soal_esai'] ?? null;
-        if (!$question) return null; // Skip empty rows
-
-        $optionA = $row['option_a'] ?? $row['opsi_a'] ?? $row['pilihan_a'] ?? $row['a'] ?? null;
-        $optionB = $row['option_b'] ?? $row['opsi_b'] ?? $row['pilihan_b'] ?? $row['b'] ?? null;
-        $optionC = $row['option_c'] ?? $row['opsi_c'] ?? $row['pilihan_c'] ?? $row['c'] ?? null;
-        $optionD = $row['option_d'] ?? $row['opsi_d'] ?? $row['pilihan_d'] ?? $row['d'] ?? null;
-        $correctAnswer = $row['correct_answer'] ?? $row['kunci'] ?? $row['jawaban'] ?? $row['benar'] ?? $row['kunci_jawaban'] ?? $row['jawaban_benar'] ?? null;
-
-        // Aliases for flexibility
-        $rawType = $row['type'] ?? $row['tipe'] ?? $row['jenis'] ?? null;
+        // 1. SKIP HEADER ROW (Heuristic Detection)
+        // Convert all row values to lowercase for checking
+        $rowValues = array_map(fn($v) => strtolower(trim($v ?? '')), $row);
         
+        // If row contains header-like keywords, skip it
+        if (in_array('soal', $rowValues) || 
+            in_array('question', $rowValues) || 
+            in_array('pertanyaan', $rowValues) || 
+            in_array('soal essay', $rowValues) ||
+            in_array('soal esai', $rowValues) ||
+            in_array('kunci', $rowValues) ||
+            in_array('opsi a', $rowValues)) {
+            return null;
+        }
+
+        // 2. SKIP EMPTY ROWS
+        // Filter out empty values
+        if (empty(array_filter($rowValues, fn($v) => $v !== ''))) {
+            return null;
+        }
+
+        // 3. MAP COLUMNS BY INDEX (No Header Mode)
+        // Heuristic: If column 0 is a small number (1, 2, 3...), then Question is likely at index 1.
+        // Otherwise, Question is at index 0.
+        
+        $col0 = $row[0] ?? null;
+        $col1 = $row[1] ?? null;
+        
+        $isNumbered = is_numeric($col0) && $col0 < 1000; // Assume question numbering < 1000
+        
+        if ($isNumbered && !empty($col1)) {
+            // Layout: [No, Question, OptA, OptB, OptC, OptD, Answer, Type]
+            $qIdx = 1;
+        } else {
+            // Layout: [Question, OptA, OptB, OptC, OptD, Answer, Type]
+            $qIdx = 0;
+        }
+
+        // Fetch values based on calculated index
+        $question = $row[$qIdx] ?? null;
+        if (!$question) return null; // Skip if no question found
+
+        $optionA = $row[$qIdx + 1] ?? null;
+        $optionB = $row[$qIdx + 2] ?? null;
+        $optionC = $row[$qIdx + 3] ?? null;
+        $optionD = $row[$qIdx + 4] ?? null;
+        $correctAnswer = $row[$qIdx + 5] ?? null; // Usually after options
+        
+        // Type might be at index 6 or 7, but let's rely on auto-detection primarily
+        // Or check if user put type in a specific column? 
+        // Let's check if there is an explicit type column at the end
+        $rawType = $row[$qIdx + 6] ?? $row[$qIdx + 7] ?? null;
+
+        // 4. DETERMINE TYPE
         if ($rawType) {
-            $type = strtolower(trim($rawType));
-            if ($type == 'pg' || $type == 'pilihan ganda' || $type == 'multiple choice') {
+            $t = strtolower(trim($rawType));
+            if (str_contains($t, 'pg') || str_contains($t, 'ganda') || str_contains($t, 'choice')) {
                 $type = 'multiple_choice';
-            }
-            if ($type == 'esai' || $type == 'essay') {
+            } elseif (str_contains($t, 'esai') || str_contains($t, 'essay')) {
                 $type = 'essay';
+            } else {
+                // Fallback to auto-detect
+                $type = (!empty($optionA)) ? 'multiple_choice' : 'essay';
             }
         } else {
             // Auto-detect based on options
             // If option A is present, assume multiple choice, otherwise essay
-            if (!empty($optionA)) {
-                $type = 'multiple_choice';
-            } else {
-                $type = 'essay';
-            }
+            $type = (!empty($optionA)) ? 'multiple_choice' : 'essay';
         }
 
-        // Normalize category (Main Category: Cover, Case, etc.)
-        $allowedCategories = ['cover', 'case', 'inner', 'endplate'];
-        $rowCategoryRaw = $row['category'] ?? $row['kategori'] ?? $row['bagian'] ?? null;
-        $rowCategory = $rowCategoryRaw ? strtolower(trim($rowCategoryRaw)) : null;
+        // 5. NORMALIZE CATEGORY
+        // Category usually passed via constructor, but check if row has it (unlikely in simple format)
+        // If the user put category in the Excel, it would be complex to guess index. 
+        // We will stick to constructor defaults unless we find a strong match.
         
-        if ($rowCategory && in_array($rowCategory, $allowedCategories)) {
-            $category = $rowCategory;
-        } elseif ($this->defaultCategory) {
+        $allowedCategories = ['cover', 'case', 'inner', 'endplate'];
+        if ($this->defaultCategory) {
             $category = strtolower($this->defaultCategory);
         } else {
-            $category = $rowCategory ?: 'cover';
+            $category = 'cover'; // Default fallback
         }
         
-        // Normalize correct answer to lowercase and trim
+        // Normalize correct answer
         if ($correctAnswer) {
             $correctAnswer = strtolower(trim($correctAnswer));
         }
