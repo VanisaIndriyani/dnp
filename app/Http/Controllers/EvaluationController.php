@@ -32,22 +32,32 @@ class EvaluationController extends Controller
 
     public function start()
     {
-        // Check if user already took the test
-        $existingResult = EvaluationResult::where('user_id', auth()->id())->first();
-        if ($existingResult) {
-            return redirect()->route(auth()->user()->role . '.evaluation.results')->with('info', 'Anda sudah mengerjakan evaluasi. Skor Anda: ' . $existingResult->score . ($existingResult->status == 'pending' ? ' (Menunggu Penilaian)' : ''));
-        }
-
         $userDivision = auth()->user()->division;
         
         // Strict filtering: Only show questions for the specific division.
-        // Questions with NULL category (old questions) will only be shown if user has NULL division (or we can hide them).
-        // Based on user feedback, they expect ONLY questions for their division.
         if ($userDivision) {
              $questions = Evaluation::where('category', $userDivision)->get();
         } else {
-             // Fallback for users without division (maybe admins testing, or old users)
              $questions = Evaluation::whereNull('category')->get();
+        }
+
+        // Check if user already took the test with the CURRENT set of questions
+        $latestResult = EvaluationResult::where('user_id', auth()->id())->latest()->first();
+
+        if ($latestResult) {
+            // Get IDs of questions answered in the latest result
+            $answeredQuestionIds = EvaluationAnswer::where('evaluation_result_id', $latestResult->id)
+                ->pluck('evaluation_id')
+                ->sort()
+                ->values()
+                ->toArray();
+            
+            $activeQuestionIds = $questions->pluck('id')->sort()->values()->toArray();
+
+            // If the question set is identical, block access
+            if ($answeredQuestionIds === $activeQuestionIds) {
+                return redirect()->route(auth()->user()->role . '.evaluation.results')->with('info', 'Anda sudah mengerjakan evaluasi.' . ($latestResult->status == 'pending' ? ' (Menunggu Penilaian)' : ''));
+            }
         }
 
         if ($questions->isEmpty()) {
@@ -63,17 +73,28 @@ class EvaluationController extends Controller
             'answers' => 'required|array',
         ]);
 
-        // Prevent duplicate submission
-        if (EvaluationResult::where('user_id', auth()->id())->exists()) {
-            return redirect()->route(auth()->user()->role . '.evaluation.results')->with('error', 'Anda sudah mengerjakan evaluasi.');
-        }
-
         $userDivision = auth()->user()->division;
         
         if ($userDivision) {
              $questions = Evaluation::where('category', $userDivision)->get();
         } else {
              $questions = Evaluation::whereNull('category')->get();
+        }
+
+        // Prevent duplicate submission for the same question set
+        $latestResult = EvaluationResult::where('user_id', auth()->id())->latest()->first();
+        if ($latestResult) {
+            $answeredQuestionIds = EvaluationAnswer::where('evaluation_result_id', $latestResult->id)
+                ->pluck('evaluation_id')
+                ->sort()
+                ->values()
+                ->toArray();
+            
+            $activeQuestionIds = $questions->pluck('id')->sort()->values()->toArray();
+
+            if ($answeredQuestionIds === $activeQuestionIds) {
+                return redirect()->route(auth()->user()->role . '.evaluation.results')->with('error', 'Anda sudah mengerjakan evaluasi ini.');
+            }
         }
 
         if ($questions->isEmpty()) {
