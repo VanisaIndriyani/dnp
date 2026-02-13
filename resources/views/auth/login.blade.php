@@ -75,7 +75,7 @@
     <div class="login-card">
         <div class="login-header">
             <img src="{{ asset('img/logo.jpeg') }}" alt="DNP Logo" class="login-logo">
-            <h5 class="mb-2 fw-bold text-wrap" style="line-height: 1.2;">TRAINING CENTER PART PRODUCTION</h5>
+            <h5 class="mb-2 fw-bold text-wrap" style="line-height: 1.2;">TRAINING CENTER<br>PART PRODUCTION</h5>
             <p class="mb-0 small opacity-75">Silakan login untuk melanjutkan</p>
         </div>
         <div class="login-body">

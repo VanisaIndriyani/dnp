@@ -15,7 +15,7 @@
         <div class="sidebar-header d-flex justify-content-center align-items-center flex-column py-3">
             <a href="{{ route('admin.dashboard') }}" class="sidebar-brand d-flex flex-column align-items-center text-center text-decoration-none">
                 <img src="{{ asset('img/logo.jpeg') }}" alt="DNP Logo" class="mb-2" style="height: 60px; width: 60px; border-radius: 50%; object-fit: cover;"> 
-                <span class="fs-6 fw-bold text-white text-wrap" style="line-height: 1.2;">TRAINING CENTER PART PRODUCTION</span>
+                <span class="fs-6 fw-bold text-white text-wrap" style="line-height: 1.2;">TRAINING CENTER<br>PART PRODUCTION</span>
             </a>
         </div>
         <ul class="sidebar-menu">

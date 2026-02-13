@@ -78,7 +78,7 @@
     <div class="register-card">
         <div class="register-header">
             <img src="{{ asset('img/logo.jpeg') }}" alt="DNP Logo" class="register-logo">
-            <h5 class="mb-2 fw-bold text-wrap" style="line-height: 1.2;">TRAINING CENTER PART PRODUCTION</h5>
+            <h5 class="mb-2 fw-bold text-wrap" style="line-height: 1.2;">TRAINING CENTER<br>PART PRODUCTION</h5>
             <h4 class="mb-0">Daftar Akun Baru</h4>
             <p class="mb-0 small opacity-75">Isi data diri untuk mendaftar</p>
         </div>
