@@ -46,17 +46,32 @@ class EvaluationController extends Controller
 
         if ($latestResult) {
             // Get IDs of questions answered in the latest result
-            $answeredQuestionIds = EvaluationAnswer::where('evaluation_result_id', $latestResult->id)
+            // Note: We use created_at to approximate the session since we don't have evaluation_result_id in answers table yet
+            $answeredQuestionIds = EvaluationAnswer::where('user_id', auth()->id())
+                ->whereBetween('created_at', [$latestResult->created_at->subSeconds(5), $latestResult->created_at->addSeconds(60)]) // Approximate matching
                 ->pluck('evaluation_id')
                 ->sort()
                 ->values()
                 ->toArray();
             
-            $activeQuestionIds = $questions->pluck('id')->sort()->values()->toArray();
+            // Fallback: If no answers found with timestamp match, maybe check all user's answers? 
+            // Better approach: Just check if the User has answered these specific questions EVER.
+            // But user might retake same questions if we allow.
+            
+            // Current Logic: Since we don't have evaluation_result_id, we can't link answer to specific result easily.
+            // However, we want to know if the set of questions available NOW is the same as what they answered LAST TIME.
+            
+            // Let's rely on the latest answers for each question type available now.
+            $lastAnswers = EvaluationAnswer::where('user_id', auth()->id())
+                ->whereIn('evaluation_id', $questions->pluck('id'))
+                ->get();
+            
+            // If user has answered ALL the currently available questions
+            $answeredIds = $lastAnswers->pluck('evaluation_id')->unique()->sort()->values()->toArray();
+            $activeIds = $questions->pluck('id')->sort()->values()->toArray();
 
-            // If the question set is identical, block access
-            if ($answeredQuestionIds === $activeQuestionIds) {
-                return redirect()->route(auth()->user()->role . '.evaluation.results')->with('info', 'Anda sudah mengerjakan evaluasi.' . ($latestResult->status == 'pending' ? ' (Menunggu Penilaian)' : ''));
+            if ($answeredIds === $activeIds) {
+                 return redirect()->route(auth()->user()->role . '.evaluation.results')->with('info', 'Anda sudah mengerjakan evaluasi.' . ($latestResult->status == 'pending' ? ' (Menunggu Penilaian)' : ''));
             }
         }
 
@@ -84,15 +99,15 @@ class EvaluationController extends Controller
         // Prevent duplicate submission for the same question set
         $latestResult = EvaluationResult::where('user_id', auth()->id())->latest()->first();
         if ($latestResult) {
-            $answeredQuestionIds = EvaluationAnswer::where('evaluation_result_id', $latestResult->id)
-                ->pluck('evaluation_id')
-                ->sort()
-                ->values()
-                ->toArray();
+            // Check if current questions have been answered
+            $lastAnswers = EvaluationAnswer::where('user_id', auth()->id())
+                ->whereIn('evaluation_id', $questions->pluck('id'))
+                ->get();
             
-            $activeQuestionIds = $questions->pluck('id')->sort()->values()->toArray();
+            $answeredIds = $lastAnswers->pluck('evaluation_id')->unique()->sort()->values()->toArray();
+            $activeIds = $questions->pluck('id')->sort()->values()->toArray();
 
-            if ($answeredQuestionIds === $activeQuestionIds) {
+            if ($answeredIds === $activeIds) {
                 return redirect()->route(auth()->user()->role . '.evaluation.results')->with('error', 'Anda sudah mengerjakan evaluasi ini.');
             }
         }
