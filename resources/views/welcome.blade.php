@@ -122,7 +122,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold text-danger text-wrap" style="max-width: 200px; line-height: 1.2; font-size: 1rem;" href="#">
-                <i class="fas fa-industry me-2"></i>TRAINING CENTER PART PRODUCTION
+                <i class="fas fa-industry me-2"></i>TRAINING CENTER<br>PART PRODUCTION
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -152,7 +152,7 @@
     <header class="hero-section mt-5">
         <div class="container">
             <img src="{{ asset('img/logo.jpeg') }}" alt="DNP Logo" class="hero-logo">
-            <h1 class="display-4 fw-bold">Selamat Datang di Training Center Part Production</h1>
+            <h1 class="display-4 fw-bold">Selamat Datang di Training Center<br>Part Production</h1>
             <p class="lead mb-4">Sistem Manajemen Absensi dan Evaluasi Karyawan</p>
             @guest
                 <div class="d-flex justify-content-center gap-3 mt-4">
