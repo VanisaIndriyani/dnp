@@ -221,6 +221,7 @@
         let warningCount = 0;
         const maxWarnings = 2;
         let isExamActive = false;
+        let isInternalPrompt = false;
 
         // Make selectOption available globally
         window.selectOption = function(card) {
@@ -338,7 +339,21 @@
                 }
 
                 if (!answered) {
-                    alert('Silakan isi jawaban terlebih dahulu sebelum lanjut ke soal berikutnya.');
+                    isInternalPrompt = true;
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Jawaban belum diisi',
+                        text: 'Silakan isi jawaban terlebih dahulu sebelum lanjut.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#d33',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    }).then(() => {
+                        isInternalPrompt = false;
+                        if (!document.fullscreenElement) {
+                            openFullscreen();
+                        }
+                    });
                     return;
                 }
 
@@ -351,14 +366,14 @@
 
         // Anti-Cheat: Visibility Change (Tab Switch)
         document.addEventListener("visibilitychange", function() {
-            if (isExamActive && document.hidden) {
+            if (isExamActive && document.hidden && !isInternalPrompt) {
                 handleViolation("Anda terdeteksi meninggalkan halaman ujian (pindah tab/minimize)!");
             }
         });
 
         // Anti-Cheat: Window Blur (Focus Loss - e.g. clicking other app)
         window.addEventListener("blur", function() {
-            if (isExamActive) {
+            if (isExamActive && !isInternalPrompt) {
                 // Small delay to prevent false positives during interaction
                 setTimeout(() => {
                     if (document.activeElement.tagName === "IFRAME") return; // Ignore iframe clicks
@@ -370,7 +385,11 @@
         // Anti-Cheat: Fullscreen Exit
         document.addEventListener('fullscreenchange', (event) => {
             if (isExamActive && !document.fullscreenElement) {
-                handleViolation("Anda keluar dari mode layar penuh!");
+                if (!isInternalPrompt) {
+                    handleViolation("Anda keluar dari mode layar penuh!");
+                } else {
+                    openFullscreen();
+                }
             }
         });
 
@@ -461,4 +480,3 @@
     });
 </script>
 @endsection
-

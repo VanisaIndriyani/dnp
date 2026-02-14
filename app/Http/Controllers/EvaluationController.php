@@ -535,41 +535,13 @@ class EvaluationController extends Controller
                 return $item;
             });
 
-            // 3. History Results Query
-            $historyQuery = \App\Models\EvaluationHistory::with('user')->where('user_id', auth()->id());
-
-            // Filters for History
-            if ($request->filled('status_kelulusan')) {
-                if ($request->status_kelulusan == 'lulus') {
-                    $historyQuery->where('score', '>=', $passingGrade);
-                } elseif ($request->status_kelulusan == 'tidak_lulus') {
-                    $historyQuery->where('score', '<', $passingGrade);
-                }
-            }
-            if ($request->filled('start_date')) {
-                $historyQuery->whereDate('archived_at', '>=', $request->start_date);
-            }
-            if ($request->filled('end_date')) {
-                $historyQuery->whereDate('archived_at', '<=', $request->end_date);
-            }
-            
-            // Sub Category Filtering for History
-            if ($request->filled('sub_category')) {
-                $historyQuery->where('sub_categories', 'like', '%' . $request->sub_category . '%');
-            }
-
-            $historyResults = $historyQuery->get()->map(function($item) {
-                $item->type = 'history';
-                $item->status = 'archived';
-                $item->sort_date = $item->archived_at;
-                $item->category_name = $item->sub_categories ?? '-';
-                return $item;
-            });
+            // 3. History Results (Hidden for operator view as requested)
+            $historyResults = collect();
 
             // 4. Merge and Sort
             // Both Active and History are now filtered by sub_category if present.
             
-            $merged = $activeResults->concat($historyResults)->sortByDesc('sort_date')->values();
+            $merged = $activeResults->sortByDesc('sort_date')->values();
 
             // 5. Paginate
             $page = $request->get('page', 1);

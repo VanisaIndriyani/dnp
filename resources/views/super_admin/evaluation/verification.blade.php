@@ -311,9 +311,15 @@
 <div class="modal fade" id="resetModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Reset Ujian</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-white border-0">
+                <h5 class="modal-title fw-bold">
+                    <span class="rounded-3 d-inline-flex align-items-center"
+                          style="background-color: rgba(220, 53, 69, 0.12); color: #dc3545; padding: .5rem .75rem;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Konfirmasi Reset Ujian
+                    </span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="text-center mb-3">
@@ -322,8 +328,10 @@
                     </div>
                 </div>
                 <p class="mb-2 text-center">Apakah Anda yakin ingin mereset hasil ujian untuk operator <strong id="resetOperatorName"></strong>?</p>
-                <div class="alert alert-warning d-flex align-items-center small mt-3" role="alert">
-                    <i class="fas fa-info-circle me-2 flex-shrink-0 fa-lg"></i>
+                <div class="alert alert-danger d-flex align-items-center small mt-3" role="alert">
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle me-2 flex-shrink-0" style="width: 28px; height: 28px; background-color: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                        <i class="fas fa-exclamation"></i>
+                    </span>
                     <div>
                         <strong>Perhatian:</strong> Tindakan ini akan menghapus seluruh jawaban dan nilai yang sudah ada. Operator harus mengerjakan ujian dari awal lagi.
                     </div>
