@@ -43,13 +43,14 @@ class EvaluationExport implements FromCollection, WithHeadings, WithMapping, Sho
         $effectivePassingGrade = $result->passing_grade ?? $this->passingGrade;
         $kelulusan = $result->score >= $effectivePassingGrade ? 'LULUS' : 'TIDAK LULUS';
         $division = ucfirst($result->user->division ?? '-');
+        $category = $result->sub_categories ?: '-';
 
         return [
             $this->rowNumber++,
             $result->user->name ?? '-',
             $result->user->nik ?? '-',
             $division, // Bagian
-            $division, // Kategori (Disamakan dengan Bagian sesuai permintaan)
+            $category, // Kategori
             $kelulusan,
             strval($result->mc_score),
             strval($result->essay_score),
